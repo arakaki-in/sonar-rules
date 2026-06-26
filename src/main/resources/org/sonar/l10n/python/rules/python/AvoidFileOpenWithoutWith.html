@@ -1,0 +1,12 @@
+<p>This rule detects calls to the built-in <code>open()</code> or <code>io.open()</code> functions that are not managed by a <code>with</code> context manager statement. Opening files without using a <code>with</code> statement can lead to unclosed file handles and resource leaks if an exception occurs before the file is explicitly closed.</p>
+<h2>Noncompliant Code Example</h2>
+<pre>
+f = open("file.txt", "w")
+f.write("Hello")
+f.close()
+</pre>
+<h2>Compliant Solution</h2>
+<pre>
+with open("file.txt", "w") as f:
+    f.write("Hello")
+</pre>

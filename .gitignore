@@ -1,2 +1,3 @@
 target/*
 .agents/*
+src/test/resources/sample-python-project/.scannerwork/*

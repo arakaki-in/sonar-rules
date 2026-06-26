@@ -1,0 +1,13 @@
+{
+  "title": "Avoid file open calls without with context managers",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

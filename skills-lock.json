@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "java-junit": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/java-junit/SKILL.md",
+      "computedHash": "fbf3cb0d47ffb44bdb6e1ebcc4d89dd7083208efdfc5b88f316c8bc2b58250b5"
+    },
+    "java-testing": {
+      "source": "pluginagentmarketplace/custom-plugin-java",
+      "sourceType": "github",
+      "skillPath": "skills/java-testing/SKILL.md",
+      "computedHash": "ac873993487ec4d7d4da229792874d46847e2ba6bd97a68166bcf29f20998cb6"
+    },
+    "open-source-checker": {
+      "source": "shipshitdev/library",
+      "sourceType": "github",
+      "skillPath": "skills/open-source-checker/SKILL.md",
+      "computedHash": "c49d29438206cd41a55ffbb6895b33ef47ed42535e4b0c108e1ce152406dc7bb"
+    },
+    "open-source-license": {
+      "source": "skala-io/legal-skills",
+      "sourceType": "github",
+      "skillPath": "skills/open-source-license/SKILL.md",
+      "computedHash": "4815a253b6e131a25162707d4bd9c1130c915625995e3937c04e9c9ee3178e51"
+    },
+    "software-architecture": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/software-architecture/SKILL.md",
+      "computedHash": "19ee028010077ff687e3fcf9613b4f9b9d6c839a15396007d9ba263f6930ec6a"
+    }
+  }
+}

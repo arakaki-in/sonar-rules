@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.sonar.samples.python</groupId>
+  <artifactId>sonar-rules-arakakiin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>sonar-plugin</packaging>
+
+  <name>SonarQube Python :: Arakakiin Rules Plugin</name>
+  <description>Python custom rules plugin for SonarQube</description>
+
+  <url>https://github.com/arakakiin/sonar-rules-arakakiin</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Everton Arakaki</name>
+      <email>eveuca@gmail.com</email>
+      <organization>Arakakiin</organization>
+      <organizationUrl>https://github.com/arakakiin</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/arakakiin/sonar-rules-arakakiin.git</connection>
+    <developerConnection>scm:git:ssh://github.com:arakakiin/sonar-rules-arakakiin.git</developerConnection>
+    <url>https://github.com/arakakiin/sonar-rules-arakakiin/tree/main</url>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sonar.version>26.2.0.119303</sonar.version>
+    <sonar.api.version>13.0.0.3026</sonar.api.version>
+    <sonar.python.version>5.23.0.33560</sonar.python.version>
+    <sonar-analyzer-commons.version>2.24.0.4903</sonar-analyzer-commons.version>
+    <pluginApiMinVersion>9.9</pluginApiMinVersion>
+    <sonar-orchestrator.version>6.2.0.4392</sonar-orchestrator.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.sonarsource.api.plugin</groupId>
+      <artifactId>sonar-plugin-api</artifactId>
+      <version>${sonar.api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-analyzer-commons</artifactId>
+      <version>${sonar-analyzer-commons.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.sonarqube</groupId>
+      <artifactId>sonar-plugin-api-impl</artifactId>
+      <version>${sonar.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.python</groupId>
+      <artifactId>python-commons</artifactId>
+      <version>${sonar.python.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.python</groupId>
+      <artifactId>python-checks-testkit</artifactId>
+      <version>${sonar.python.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.9.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.9.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.orchestrator</groupId>
+      <artifactId>sonar-orchestrator-junit5</artifactId>
+      <version>${sonar-orchestrator.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <version>1.23.0.740</version>
+        <extensions>true</extensions>
+        <configuration>
+          <pluginClass>org.sonar.samples.python.CustomPythonRulesPlugin</pluginClass>
+          <requirePlugins>python:${sonar.python.version}</requirePlugins>
+          <pluginApiMinVersion>${pluginApiMinVersion}</pluginApiMinVersion>
+          <requiredForLanguages>py,ipynb</requiredForLanguages>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.1.2</version>
+        <configuration>
+          <excludes>
+            <!-- Do not run integration tests in the standard test phase -->
+            <exclude>**/*IntegrationTest.java</exclude>
+            <exclude>**/*IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>3.1.2</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <includes>
+                <include>**/*IntegrationTest.java</include>
+                <include>**/*IT.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>
