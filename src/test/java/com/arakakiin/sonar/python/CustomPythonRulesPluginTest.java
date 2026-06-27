@@ -4,6 +4,8 @@
  */
 package com.arakakiin.sonar.python;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarEdition;
@@ -13,12 +15,12 @@ import org.sonar.api.internal.PluginContextImpl;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 class CustomPythonRulesPluginTest {
   @Test
   void test() {
-    SonarRuntime sonarRuntime = SonarRuntimeImpl.forSonarQube(Version.create(9, 9), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER);
+    SonarRuntime sonarRuntime =
+        SonarRuntimeImpl.forSonarQube(
+            Version.create(9, 9), SonarQubeSide.SCANNER, SonarEdition.DEVELOPER);
     Plugin.Context context = new PluginContextImpl.Builder().setSonarRuntime(sonarRuntime).build();
     new CustomPythonRulesPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(1);

@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class NoGlobalMutableStateCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/NoGlobalMutableState.py", new NoGlobalMutableStateCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/NoGlobalMutableState.py", new NoGlobalMutableStateCheck());
   }
 }

@@ -13,7 +13,10 @@ import org.sonar.plugins.python.api.tree.*;
 public class AvoidTryExceptControlFlowCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "AvoidTryExceptControlFlow";
-  private static final String MESSAGE = "Avoid using try-except blocks for standard control flow (e.g. KeyError, AttributeError, IndexError). Use explicit checks like 'dict.get()', 'hasattr()', or index length validation instead.";
+  private static final String MESSAGE =
+      "Avoid using try-except blocks for standard control flow (e.g. KeyError, AttributeError,"
+          + " IndexError). Use explicit checks like 'dict.get()', 'hasattr()', or index length"
+          + " validation instead.";
 
   @Override
   public void initialize(Context context) {

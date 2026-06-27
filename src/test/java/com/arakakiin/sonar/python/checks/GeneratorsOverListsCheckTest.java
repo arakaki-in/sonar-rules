@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class GeneratorsOverListsCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/GeneratorsOverLists.py", new GeneratorsOverListsCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/GeneratorsOverLists.py", new GeneratorsOverListsCheck());
   }
 }

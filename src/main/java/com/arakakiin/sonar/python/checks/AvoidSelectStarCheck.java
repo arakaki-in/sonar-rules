@@ -4,19 +4,22 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.regex.Pattern;
 
 @Rule(key = AvoidSelectStarCheck.RULE_KEY)
 public class AvoidSelectStarCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "AvoidSelectStar";
-  private static final String MESSAGE = "Avoid using 'SELECT *' in SQL queries. Explicitly project only the columns required to minimize network payload and database overhead.";
+  private static final String MESSAGE =
+      "Avoid using 'SELECT *' in SQL queries. Explicitly project only the columns required to"
+          + " minimize network payload and database overhead.";
 
-  private static final Pattern SELECT_STAR_PATTERN = Pattern.compile("(?i)\\bselect\\s+\\*\\s+from\\b");
+  private static final Pattern SELECT_STAR_PATTERN =
+      Pattern.compile("(?i)\\bselect\\s+\\*\\s+from\\b");
 
   @Override
   public void initialize(Context context) {

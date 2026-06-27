@@ -13,7 +13,9 @@ import org.sonar.plugins.python.api.tree.*;
 public class FastJsonParsingCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "FastJsonParsing";
-  private static final String MESSAGE = "Use faster JSON parsing libraries like 'orjson' or 'ujson' instead of the standard 'json' library for high-performance JSON operations.";
+  private static final String MESSAGE =
+      "Use faster JSON parsing libraries like 'orjson' or 'ujson' instead of the standard 'json'"
+          + " library for high-performance JSON operations.";
 
   @Override
   public void initialize(Context context) {

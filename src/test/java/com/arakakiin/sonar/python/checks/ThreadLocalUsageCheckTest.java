@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class ThreadLocalUsageCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/ThreadLocalUsage.py", new ThreadLocalUsageCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/ThreadLocalUsage.py", new ThreadLocalUsageCheck());
   }
 }

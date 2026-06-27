@@ -10,6 +10,8 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class AvoidFileOpenWithoutWithCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/AvoidFileOpenWithoutWith.py", new AvoidFileOpenWithoutWithCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/AvoidFileOpenWithoutWith.py",
+        new AvoidFileOpenWithoutWithCheck());
   }
 }

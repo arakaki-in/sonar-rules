@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class FastJsonParsingCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/FastJsonParsing.py", new FastJsonParsingCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/FastJsonParsing.py", new FastJsonParsingCheck());
   }
 }

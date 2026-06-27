@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class AvoidSelectStarCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/AvoidSelectStar.py", new AvoidSelectStarCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/AvoidSelectStar.py", new AvoidSelectStarCheck());
   }
 }

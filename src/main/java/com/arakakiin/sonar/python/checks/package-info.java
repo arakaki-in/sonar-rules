@@ -6,4 +6,3 @@
 package com.arakakiin.sonar.python.checks;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-

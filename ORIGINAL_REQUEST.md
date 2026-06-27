@@ -136,3 +136,53 @@ Delete:
 - [ ] `mvn clean test` compiles and all unit tests pass successfully.
 - [ ] `mvn clean verify -Pintegration-tests` builds and runs the Sonar Orchestrator integration test successfully.
 
+## Follow-up — 2026-06-27T19:27:36+02:00
+
+Implement enterprise-grade CI/CD pipeline upgrades for the arakakiin-rules-plugin SonarQube plugin project to support formatting verification, dependency checks, SAST scanning, build matrix execution, and signed GPG release artifacts.
+
+Working directory: /home/everton/arakakiin/regras-python/sonar-rules-arakakiin
+Integrity mode: development
+
+## Requirements
+
+### R1. Java Code Formatting Linting (Spotless)
+* Configure `spotless-maven-plugin` in `pom.xml` using the Google Java Format to enforce standard styling.
+* Add a step in the CI build job to verify formatting using `mvn spotless:check`.
+
+### R2. Code Coverage Integration (JaCoCo & Codecov)
+* Add `jacoco-maven-plugin` configuration in `pom.xml` to produce XML coverage reports during the `test` phase.
+* Add a step in `.github/workflows/release.yml` to upload these reports to Codecov via the `codecov/codecov-action`.
+
+### R3. Dependency Verification & SAST Security Scanning (OWASP & CodeQL)
+* Configure the OWASP `dependency-check-maven` plugin under a dedicated `security-audit` profile to check for CVEs in libraries.
+* Create a dedicated `.github/workflows/codeql.yml` workflow to run GitHub CodeQL SAST scanning on pull requests and pushes to `main`.
+
+### R4. JDK Build Matrix Testing
+* Configure the GitHub Actions build job to test the codebase against a matrix of JDK 21 (LTS) and the latest JDK 22 or 23 on Ubuntu Linux.
+
+### R5. Release Artifact GPG Signing
+* Configure GPG artifact signing via a `gpg` step in `.github/workflows/release.yml` when creating releases on git tag (`v*`) pushes.
+* Attach signed files (`.asc` and `.jar`) to the created GitHub Release.
+
+## Acceptance Criteria
+
+### Formatting & Linting
+- [ ] Running `mvn spotless:check` passes without errors on formatted Java files.
+- [ ] Build workflow in `.github/workflows/release.yml` contains a step verifying formatting.
+
+### Coverage & Security
+- [ ] JaCoCo XML reports are generated in `target/site/jacoco/jacoco.xml` when running tests.
+- [ ] CI workflow uploads coverage reports to Codecov.
+- [ ] A dedicated `codeql.yml` workflow file exists in `.github/workflows/` and is valid.
+- [ ] Running `mvn verify -Psecurity-audit` executes the OWASP dependency check successfully.
+
+### Build Matrix & Release Signing
+- [ ] The build job in `release.yml` successfully executes unit and integration tests across JDK 21 and the latest JDK 22/23.
+- [ ] The publish job in `release.yml` decrypts/imports GPG keys and signs the packaged JAR file.
+- [ ] The GitHub Release step attaches both the `.jar` and its `.asc` signature.
+- [ ] Local build (`mvn clean test`) compiles and unit tests pass successfully.
+
+## Follow-up — 2026-06-27T19:42:50+02:00
+
+* Note: The user has updated `pom.xml` to configure `<autoUpdate>false</autoUpdate>` and `<failOnError>false</failOnError>` on the OWASP dependency-check-maven plugin.
+* New Requirement: We need to update the agent harness rules inside `AGENTS.md` (located in the workspace root). The update must state that any future contribution or task is only considered successfully completed and ready for delivery/merge once all the newly integrated checks (Spotless formatting, JaCoCo test coverage, and OWASP dependency checks) pass successfully.

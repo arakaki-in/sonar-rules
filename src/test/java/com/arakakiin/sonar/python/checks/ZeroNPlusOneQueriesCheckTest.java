@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class ZeroNPlusOneQueriesCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/ZeroNPlusOneQueries.py", new ZeroNPlusOneQueriesCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/ZeroNPlusOneQueries.py", new ZeroNPlusOneQueriesCheck());
   }
 }

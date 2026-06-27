@@ -4,20 +4,24 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.Set;
 
 @Rule(key = DbLevelAggregationCheck.RULE_KEY)
 public class DbLevelAggregationCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "DbLevelAggregation";
-  private static final String MESSAGE = "Avoid database-to-memory aggregation. Perform aggregation at the database level using SQL aggregate functions (e.g. COUNT, SUM, AVG) instead of loading all records into Python.";
+  private static final String MESSAGE =
+      "Avoid database-to-memory aggregation. Perform aggregation at the database level using SQL"
+          + " aggregate functions (e.g. COUNT, SUM, AVG) instead of loading all records into"
+          + " Python.";
 
   private static final Set<String> AGGREGATE_FUNCTIONS = Set.of("sum", "len", "min", "max");
-  private static final Set<String> QUERY_METHODS = Set.of("all", "filter", "filter_by", "execute", "fetchall");
+  private static final Set<String> QUERY_METHODS =
+      Set.of("all", "filter", "filter_by", "execute", "fetchall");
 
   @Override
   public void initialize(Context context) {

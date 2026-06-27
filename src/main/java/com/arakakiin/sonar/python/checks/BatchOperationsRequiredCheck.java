@@ -4,19 +4,22 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.regex.Pattern;
 
 @Rule(key = BatchOperationsRequiredCheck.RULE_KEY)
 public class BatchOperationsRequiredCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "BatchOperationsRequired";
-  private static final String MESSAGE = "Use batch operations (like 'session.add_all()', bulk inserts, or 'cursor.executemany()') instead of single-row database operations inside a loop.";
+  private static final String MESSAGE =
+      "Use batch operations (like 'session.add_all()', bulk inserts, or 'cursor.executemany()')"
+          + " instead of single-row database operations inside a loop.";
 
-  private static final Pattern BATCHABLE_SQL_PATTERN = Pattern.compile("(?i)\\b(insert|update|delete)\\b");
+  private static final Pattern BATCHABLE_SQL_PATTERN =
+      Pattern.compile("(?i)\\b(insert|update|delete)\\b");
 
   @Override
   public void initialize(Context context) {

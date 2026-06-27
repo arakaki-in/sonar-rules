@@ -37,3 +37,11 @@ We enforce a strict 18-rule performance and safety ruleset. To prevent duplicate
 - **Category 3 (Database):** Zero N+1 Queries (3.1), Avoid `SELECT *` on Heavy Tables (3.2), Batch Operations Required (3.3), DB-Level Aggregation (3.4)
 - **Category 4 (CPU & Memory):** Avoid Eager Regex Compilation (4.1), Generators Over Lists for Large Data (4.2), Efficient String Concatenation (4.3), Use `__slots__` for High-Volume Objects (4.4), Fast JSON Parsing (4.5)
 - **Category 5 (Logging & Errors):** Avoid Try/Except for Control Flow (5.2)
+
+## Merge Readiness & Verification
+
+Any future contribution, pull request, or task is only considered successfully completed and ready for delivery/merge once all of the following checks pass successfully:
+1. **Code Formatting (Spotless)**: Run `mvn spotless:check` to ensure the codebase strictly adheres to the configured Google Java Format style.
+2. **Test Coverage (JaCoCo)**: Run `mvn clean test` to ensure that all unit tests execute and pass sequentially, and the coverage report is successfully generated at `target/site/jacoco/jacoco.xml`.
+3. **Security Audit (OWASP Dependency Check)**: Ensure that dependency scans are executed and pass successfully to verify there are no known vulnerabilities.
+

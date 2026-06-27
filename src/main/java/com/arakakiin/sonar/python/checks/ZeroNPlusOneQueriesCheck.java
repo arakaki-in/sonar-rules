@@ -4,21 +4,23 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.Set;
 
 @Rule(key = ZeroNPlusOneQueriesCheck.RULE_KEY)
 public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "ZeroNPlusOneQueries";
-  private static final String MESSAGE = "Avoid executing database queries inside a loop (N+1 query problem). Use join fetching or prefetching instead.";
+  private static final String MESSAGE =
+      "Avoid executing database queries inside a loop (N+1 query problem). Use join fetching or"
+          + " prefetching instead.";
 
-  private static final Set<String> QUERY_METHODS = Set.of(
-      "execute", "query", "filter", "filter_by", "all", "first", "exclude", "delete", "update"
-  );
+  private static final Set<String> QUERY_METHODS =
+      Set.of(
+          "execute", "query", "filter", "filter_by", "all", "first", "exclude", "delete", "update");
 
   @Override
   public void initialize(Context context) {
@@ -27,7 +29,9 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    if (isInsideLoop(callExpression) && isDbQueryCall(callExpression) && !isNestedQueryCall(callExpression)) {
+    if (isInsideLoop(callExpression)
+        && isDbQueryCall(callExpression)
+        && !isNestedQueryCall(callExpression)) {
       ctx.addIssue(callExpression, MESSAGE);
     }
   }
@@ -52,7 +56,10 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
         Expression qualifier = qualExpr.qualifier();
         if (qualifier.is(Tree.Kind.NAME)) {
           String qualName = ((Name) qualifier).name();
-          return qualName.contains("db") || qualName.contains("session") || qualName.contains("query") || qualName.contains("repo");
+          return qualName.contains("db")
+              || qualName.contains("session")
+              || qualName.contains("query")
+              || qualName.contains("repo");
         }
         return false;
       }
@@ -67,8 +74,10 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
   private static boolean isInsideLoop(Tree tree) {
     Tree parent = tree.parent();
     while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT) || 
-          parent.is(Tree.Kind.LIST_COMPREHENSION) || parent.is(Tree.Kind.GENERATOR_EXPR)) {
+      if (parent.is(Tree.Kind.FOR_STMT)
+          || parent.is(Tree.Kind.WHILE_STMT)
+          || parent.is(Tree.Kind.LIST_COMPREHENSION)
+          || parent.is(Tree.Kind.GENERATOR_EXPR)) {
         return true;
       }
       parent = parent.parent();

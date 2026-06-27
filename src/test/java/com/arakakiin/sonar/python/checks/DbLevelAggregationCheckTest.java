@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class DbLevelAggregationCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/DbLevelAggregation.py", new DbLevelAggregationCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/DbLevelAggregation.py", new DbLevelAggregationCheck());
   }
 }

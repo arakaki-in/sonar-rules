@@ -4,27 +4,31 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Rule(key = EfficientStringConcatenationCheck.RULE_KEY)
 public class EfficientStringConcatenationCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "EfficientStringConcatenation";
-  private static final String MESSAGE = "Avoid repeated string concatenation using '+' or '+=' inside a loop. Use list appending and ''.join() for efficient string construction.";
+  private static final String MESSAGE =
+      "Avoid repeated string concatenation using '+' or '+=' inside a loop. Use list appending and"
+          + " ''.join() for efficient string construction.";
 
-  private static final Set<String> STRING_VAR_KEYWORDS = Set.of(
-      "str", "text", "msg", "body", "html", "xml", "line", "buf", "output", "query", "sql", "content", "string"
-  );
+  private static final Set<String> STRING_VAR_KEYWORDS =
+      Set.of(
+          "str", "text", "msg", "body", "html", "xml", "line", "buf", "output", "query", "sql",
+          "content", "string");
 
   @Override
   public void initialize(Context context) {
-    context.registerSyntaxNodeConsumer(Tree.Kind.COMPOUND_ASSIGNMENT, this::checkCompoundAssignment);
+    context.registerSyntaxNodeConsumer(
+        Tree.Kind.COMPOUND_ASSIGNMENT, this::checkCompoundAssignment);
     context.registerSyntaxNodeConsumer(Tree.Kind.ASSIGNMENT_STMT, this::checkAssignment);
   }
 
@@ -98,7 +102,8 @@ public class EfficientStringConcatenationCheck extends PythonSubscriptionCheck {
       }
     }
     if (expr instanceof BinaryExpression binExpr) {
-      return isStringExpression(binExpr.leftOperand()) || isStringExpression(binExpr.rightOperand());
+      return isStringExpression(binExpr.leftOperand())
+          || isStringExpression(binExpr.rightOperand());
     }
     return false;
   }

@@ -10,6 +10,8 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class AvoidTryExceptControlFlowCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/AvoidTryExceptControlFlow.py", new AvoidTryExceptControlFlowCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/AvoidTryExceptControlFlow.py",
+        new AvoidTryExceptControlFlowCheck());
   }
 }

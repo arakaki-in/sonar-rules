@@ -24,7 +24,8 @@ public class CustomPythonRuleRepository implements RulesDefinition, PythonCustom
 
   @Override
   public void define(Context context) {
-    NewRepository repository = context.createRepository(REPOSITORY_KEY, "py").setName(REPOSITORY_NAME);
+    NewRepository repository =
+        context.createRepository(REPOSITORY_KEY, "py").setName(REPOSITORY_NAME);
     RuleMetadataLoader ruleMetadataLoader = new RuleMetadataLoader(RESOURCE_BASE_PATH, runtime);
     ruleMetadataLoader.addRulesByAnnotatedClass(repository, new ArrayList<>(RulesList.getChecks()));
     repository.done();

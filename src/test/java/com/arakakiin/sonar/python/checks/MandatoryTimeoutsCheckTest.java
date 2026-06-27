@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class MandatoryTimeoutsCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/MandatoryTimeouts.py", new MandatoryTimeoutsCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/MandatoryTimeouts.py", new MandatoryTimeoutsCheck());
   }
 }

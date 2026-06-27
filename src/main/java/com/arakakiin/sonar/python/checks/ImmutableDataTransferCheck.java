@@ -4,18 +4,20 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.symbols.Symbol;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.List;
 
 @Rule(key = ImmutableDataTransferCheck.RULE_KEY)
 public class ImmutableDataTransferCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "ImmutableDataTransfer";
-  private static final String MESSAGE = "Ensure data sent across thread or process boundaries is immutable (avoid sending mutable lists, dicts, or sets).";
+  private static final String MESSAGE =
+      "Ensure data sent across thread or process boundaries is immutable (avoid sending mutable"
+          + " lists, dicts, or sets).";
 
   @Override
   public void initialize(Context context) {
@@ -24,11 +26,11 @@ public class ImmutableDataTransferCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    
+
     if (isThreadOrProcessInit(callExpression)) {
       checkThreadOrProcessArgs(ctx, callExpression);
     }
-    
+
     if (isQueuePutCall(callExpression)) {
       checkQueuePutArgs(ctx, callExpression);
     }
@@ -105,9 +107,9 @@ public class ImmutableDataTransferCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean containsMutableLiteral(Expression expr) {
-    if (expr.is(Tree.Kind.LIST_LITERAL) || 
-        expr.is(Tree.Kind.DICTIONARY_LITERAL) || 
-        expr.is(Tree.Kind.SET_LITERAL)) {
+    if (expr.is(Tree.Kind.LIST_LITERAL)
+        || expr.is(Tree.Kind.DICTIONARY_LITERAL)
+        || expr.is(Tree.Kind.SET_LITERAL)) {
       return true;
     }
     if (expr.is(Tree.Kind.TUPLE)) {

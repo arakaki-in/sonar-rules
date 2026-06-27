@@ -4,21 +4,24 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.Set;
 
 @Rule(key = UseSlotsCheck.RULE_KEY)
 public class UseSlotsCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "UseSlots";
-  private static final String MESSAGE = "Define '__slots__' for high-volume data classes to reduce memory usage and improve attribute access speed. For dataclasses, use '@dataclass(slots=True)'.";
+  private static final String MESSAGE =
+      "Define '__slots__' for high-volume data classes to reduce memory usage and improve attribute"
+          + " access speed. For dataclasses, use '@dataclass(slots=True)'.";
 
-  private static final Set<String> HIGH_VOLUME_SUFFIXES = Set.of(
-      "DTO", "Model", "Data", "Record", "Item", "Payload", "Result", "Entity", "Message", "Event"
-  );
+  private static final Set<String> HIGH_VOLUME_SUFFIXES =
+      Set.of(
+          "DTO", "Model", "Data", "Record", "Item", "Payload", "Result", "Entity", "Message",
+          "Event");
 
   @Override
   public void initialize(Context context) {
@@ -54,7 +57,9 @@ public class UseSlotsCheck extends PythonSubscriptionCheck {
           for (Argument arg : call.arguments()) {
             if (arg instanceof RegularArgument regArg) {
               Expression keyword = regArg.keywordArgument();
-              if (keyword != null && keyword.is(Tree.Kind.NAME) && "slots".equals(((Name) keyword).name())) {
+              if (keyword != null
+                  && keyword.is(Tree.Kind.NAME)
+                  && "slots".equals(((Name) keyword).name())) {
                 Expression val = regArg.expression();
                 if (val.is(Tree.Kind.NAME) && "True".equals(((Name) val).name())) {
                   hasSlotsTrue = true;

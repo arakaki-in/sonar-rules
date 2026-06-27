@@ -10,6 +10,8 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class EnforceConnectionPoolingCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/EnforceConnectionPooling.py", new EnforceConnectionPoolingCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/EnforceConnectionPooling.py",
+        new EnforceConnectionPoolingCheck());
   }
 }

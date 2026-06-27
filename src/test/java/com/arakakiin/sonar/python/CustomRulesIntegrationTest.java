@@ -4,6 +4,8 @@
  */
 package com.arakakiin.sonar.python;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.junit5.OrchestratorExtension;
 import com.sonar.orchestrator.locator.FileLocation;
@@ -24,8 +26,6 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 class CustomRulesIntegrationTest {
 
   private static final String ADMIN_LOGIN = "admin";
@@ -33,32 +33,37 @@ class CustomRulesIntegrationTest {
   private static final String PROJECT_KEY = "sample-python-project";
   private static final String SONAR_VERSION = "26.2.0.119303";
 
-  private static final List<String> RULE_KEYS = List.of(
-      "arakakiin-rules:AvoidFileOpenWithoutWith",
-      "arakakiin-rules:NoGlobalMutableState",
-      "arakakiin-rules:ThreadLocalUsage",
-      "arakakiin-rules:ImmutableDataTransfer",
-      "arakakiin-rules:EnforceConnectionPooling",
-      "arakakiin-rules:MandatoryTimeouts",
-      "arakakiin-rules:ZeroNPlusOneQueries",
-      "arakakiin-rules:AvoidSelectStar",
-      "arakakiin-rules:BatchOperationsRequired",
-      "arakakiin-rules:DbLevelAggregation",
-      "arakakiin-rules:AvoidEagerRegexCompilation",
-      "arakakiin-rules:GeneratorsOverLists",
-      "arakakiin-rules:EfficientStringConcatenation",
-      "arakakiin-rules:UseSlots",
-      "arakakiin-rules:FastJsonParsing",
-      "arakakiin-rules:AvoidTryExceptControlFlow"
-  );
+  private static final List<String> RULE_KEYS =
+      List.of(
+          "arakakiin-rules:AvoidFileOpenWithoutWith",
+          "arakakiin-rules:NoGlobalMutableState",
+          "arakakiin-rules:ThreadLocalUsage",
+          "arakakiin-rules:ImmutableDataTransfer",
+          "arakakiin-rules:EnforceConnectionPooling",
+          "arakakiin-rules:MandatoryTimeouts",
+          "arakakiin-rules:ZeroNPlusOneQueries",
+          "arakakiin-rules:AvoidSelectStar",
+          "arakakiin-rules:BatchOperationsRequired",
+          "arakakiin-rules:DbLevelAggregation",
+          "arakakiin-rules:AvoidEagerRegexCompilation",
+          "arakakiin-rules:GeneratorsOverLists",
+          "arakakiin-rules:EfficientStringConcatenation",
+          "arakakiin-rules:UseSlots",
+          "arakakiin-rules:FastJsonParsing",
+          "arakakiin-rules:AvoidTryExceptControlFlow");
 
   @RegisterExtension
-  static final OrchestratorExtension ORCHESTRATOR = OrchestratorExtension.builderEnv()
-      .setOrchestratorProperty("orchestrator.artifactory.url", "https://repo.maven.apache.org/maven2")
-      .setSonarVersion(SONAR_VERSION)
-      .addPlugin(MavenLocation.create("org.sonarsource.python", "sonar-python-plugin", "5.23.0.33560"))
-      .addPlugin(FileLocation.byWildcardMavenFilename(new File("target"), "arakakiin-rules-plugin-*.jar"))
-      .build();
+  static final OrchestratorExtension ORCHESTRATOR =
+      OrchestratorExtension.builderEnv()
+          .setOrchestratorProperty(
+              "orchestrator.artifactory.url", "https://repo.maven.apache.org/maven2")
+          .setSonarVersion(SONAR_VERSION)
+          .addPlugin(
+              MavenLocation.create("org.sonarsource.python", "sonar-python-plugin", "5.23.0.33560"))
+          .addPlugin(
+              FileLocation.byWildcardMavenFilename(
+                  new File("target"), "arakakiin-rules-plugin-*.jar"))
+          .build();
 
   private final HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -76,14 +81,18 @@ class CustomRulesIntegrationTest {
             .setProperty("sonar.projectKey", PROJECT_KEY)
             .setProperty("sonar.projectName", "Sample Python Project")
             .setProperty("sonar.sources", ".")
-            .setProperty("sonar.token", token)
-    );
+            .setProperty("sonar.token", token));
     waitForAnalysisProcessing(serverUrl, token);
 
     for (String ruleKey : RULE_KEYS) {
-      HttpResponse<String> response = get(serverUrl,
-          "/api/issues/search?componentKeys=" + encode(PROJECT_KEY) + "&rules=" + encode(ruleKey),
-          bearer(token));
+      HttpResponse<String> response =
+          get(
+              serverUrl,
+              "/api/issues/search?componentKeys="
+                  + encode(PROJECT_KEY)
+                  + "&rules="
+                  + encode(ruleKey),
+              bearer(token));
 
       assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
       assertThat(issueTotal(response.body()))
@@ -93,10 +102,12 @@ class CustomRulesIntegrationTest {
   }
 
   private String generateAdminToken(String serverUrl) throws Exception {
-    HttpResponse<String> response = post(serverUrl,
-        "/api/user_tokens/generate",
-        form("name", "arakakiin-it-" + Instant.now().toEpochMilli()),
-        basic(ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD));
+    HttpResponse<String> response =
+        post(
+            serverUrl,
+            "/api/user_tokens/generate",
+            form("name", "arakakiin-it-" + Instant.now().toEpochMilli()),
+            basic(ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD));
 
     assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
 
@@ -106,37 +117,44 @@ class CustomRulesIntegrationTest {
   }
 
   private void activateRules(String serverUrl, String token) throws Exception {
-    HttpResponse<String> createResponse = post(serverUrl,
-        "/api/qualityprofiles/create",
-        form(
-            "language", "py",
-            "name", "CustomPythonProfile"),
-        bearer(token));
+    HttpResponse<String> createResponse =
+        post(
+            serverUrl,
+            "/api/qualityprofiles/create",
+            form(
+                "language", "py",
+                "name", "CustomPythonProfile"),
+            bearer(token));
     assertThat(createResponse.statusCode()).as(createResponse.body()).isEqualTo(200);
 
-    Matcher keyMatcher = Pattern.compile("\"key\"\\s*:\\s*\"([^\"]+)\"").matcher(createResponse.body());
+    Matcher keyMatcher =
+        Pattern.compile("\"key\"\\s*:\\s*\"([^\"]+)\"").matcher(createResponse.body());
     assertThat(keyMatcher.find()).as(createResponse.body()).isTrue();
     String profileKey = keyMatcher.group(1);
 
-    HttpResponse<String> defaultResponse = post(serverUrl,
-        "/api/qualityprofiles/set_default",
-        form(
-            "key", profileKey,
-            "qualityProfile", "CustomPythonProfile",
-            "language", "py"),
-        bearer(token));
+    HttpResponse<String> defaultResponse =
+        post(
+            serverUrl,
+            "/api/qualityprofiles/set_default",
+            form(
+                "key", profileKey,
+                "qualityProfile", "CustomPythonProfile",
+                "language", "py"),
+            bearer(token));
     assertThat(defaultResponse.statusCode()).as(defaultResponse.body()).isBetween(200, 204);
 
     for (String ruleKey : RULE_KEYS) {
-      HttpResponse<String> activationResponse = post(serverUrl,
-          "/api/qualityprofiles/activate_rule",
-          form(
-              "profile_key", profileKey,
-              "key", profileKey,
-              "qualityProfile", "CustomPythonProfile",
-              "language", "py",
-              "rule", ruleKey),
-          bearer(token));
+      HttpResponse<String> activationResponse =
+          post(
+              serverUrl,
+              "/api/qualityprofiles/activate_rule",
+              form(
+                  "profile_key", profileKey,
+                  "key", profileKey,
+                  "qualityProfile", "CustomPythonProfile",
+                  "language", "py",
+                  "rule", ruleKey),
+              bearer(token));
 
       assertThat(activationResponse.statusCode()).as(activationResponse.body()).isBetween(200, 204);
     }
@@ -145,9 +163,8 @@ class CustomRulesIntegrationTest {
   private void waitForAnalysisProcessing(String serverUrl, String token) throws Exception {
     long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.MINUTES.toNanos(2);
     while (System.nanoTime() < deadline) {
-      HttpResponse<String> response = get(serverUrl,
-          "/api/ce/component?component=" + encode(PROJECT_KEY),
-          bearer(token));
+      HttpResponse<String> response =
+          get(serverUrl, "/api/ce/component?component=" + encode(PROJECT_KEY), bearer(token));
 
       assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
       String status = firstJsonValue(response.body(), "status");
@@ -160,28 +177,34 @@ class CustomRulesIntegrationTest {
     throw new AssertionError("Timed out waiting for SonarQube to process the analysis report");
   }
 
-  private HttpResponse<String> get(String serverUrl, String path, String authorization) throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(serverUrl + path))
-        .header("Authorization", authorization)
-        .GET()
-        .build();
+  private HttpResponse<String> get(String serverUrl, String path, String authorization)
+      throws IOException, InterruptedException {
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(serverUrl + path))
+            .header("Authorization", authorization)
+            .GET()
+            .build();
     return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
   }
 
-  private HttpResponse<String> post(String serverUrl, String path, String body, String authorization) throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(serverUrl + path))
-        .header("Authorization", authorization)
-        .header("Content-Type", "application/x-www-form-urlencoded")
-        .POST(HttpRequest.BodyPublishers.ofString(body))
-        .build();
+  private HttpResponse<String> post(
+      String serverUrl, String path, String body, String authorization)
+      throws IOException, InterruptedException {
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(serverUrl + path))
+            .header("Authorization", authorization)
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .POST(HttpRequest.BodyPublishers.ofString(body))
+            .build();
     return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
   }
 
   private static String basic(String login, String password) {
     String credentials = login + ":" + password;
-    return "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+    return "Basic "
+        + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
   }
 
   private static String bearer(String token) {
@@ -212,7 +235,9 @@ class CustomRulesIntegrationTest {
   }
 
   private static String firstJsonValue(String responseBody, String propertyName) {
-    Matcher matcher = Pattern.compile("\"" + Pattern.quote(propertyName) + "\"\\s*:\\s*\"([^\"]+)\"").matcher(responseBody);
+    Matcher matcher =
+        Pattern.compile("\"" + Pattern.quote(propertyName) + "\"\\s*:\\s*\"([^\"]+)\"")
+            .matcher(responseBody);
     assertThat(matcher.find()).as(responseBody).isTrue();
     return matcher.group(1);
   }

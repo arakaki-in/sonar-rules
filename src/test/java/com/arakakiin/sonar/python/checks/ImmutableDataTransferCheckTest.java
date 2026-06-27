@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class ImmutableDataTransferCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/ImmutableDataTransfer.py", new ImmutableDataTransferCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/ImmutableDataTransfer.py", new ImmutableDataTransferCheck());
   }
 }

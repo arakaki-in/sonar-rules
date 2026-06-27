@@ -10,6 +10,8 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class EfficientStringConcatenationCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/EfficientStringConcatenation.py", new EfficientStringConcatenationCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/EfficientStringConcatenation.py",
+        new EfficientStringConcatenationCheck());
   }
 }

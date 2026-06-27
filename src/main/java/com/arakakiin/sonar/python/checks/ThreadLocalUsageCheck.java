@@ -14,7 +14,9 @@ import org.sonar.plugins.python.api.tree.*;
 public class ThreadLocalUsageCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "ThreadLocalUsage";
-  private static final String MESSAGE = "Use 'contextvars.ContextVar' instead of 'threading.local' to ensure async-safe and thread-safe context management.";
+  private static final String MESSAGE =
+      "Use 'contextvars.ContextVar' instead of 'threading.local' to ensure async-safe and"
+          + " thread-safe context management.";
 
   @Override
   public void initialize(Context context) {
@@ -30,7 +32,7 @@ public class ThreadLocalUsageCheck extends PythonSubscriptionCheck {
 
   private static boolean isThreadingLocalCall(CallExpression callExpression) {
     Expression callee = callExpression.callee();
-    
+
     // Check direct name local()
     if (callee.is(Tree.Kind.NAME)) {
       Name name = (Name) callee;
@@ -40,7 +42,7 @@ public class ThreadLocalUsageCheck extends PythonSubscriptionCheck {
           return true;
         }
       }
-    } 
+    }
     // Check qualified threading.local()
     else if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
       QualifiedExpression qualExpr = (QualifiedExpression) callee;

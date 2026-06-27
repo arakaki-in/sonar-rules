@@ -10,6 +10,7 @@ import org.sonar.python.checks.utils.PythonCheckVerifier;
 class BatchOperationsRequiredCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/BatchOperationsRequired.py", new BatchOperationsRequiredCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/BatchOperationsRequired.py", new BatchOperationsRequiredCheck());
   }
 }

@@ -4,20 +4,22 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
 import org.sonar.plugins.python.api.symbols.Symbol;
 import org.sonar.plugins.python.api.tree.*;
-import java.util.Set;
 
 @Rule(key = MandatoryTimeoutsCheck.RULE_KEY)
 public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
 
   public static final String RULE_KEY = "MandatoryTimeouts";
-  private static final String MESSAGE = "Configure an explicit timeout for all network requests to avoid hanging indefinitely.";
+  private static final String MESSAGE =
+      "Configure an explicit timeout for all network requests to avoid hanging indefinitely.";
 
-  private static final Set<String> HTTP_METHODS = Set.of("get", "post", "put", "delete", "patch", "request");
+  private static final Set<String> HTTP_METHODS =
+      Set.of("get", "post", "put", "delete", "patch", "request");
 
   @Override
   public void initialize(Context context) {
@@ -38,9 +40,9 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
     if (symbol != null) {
       String fqn = symbol.fullyQualifiedName();
       if (fqn != null) {
-        if (fqn.startsWith("requests.api.") || 
-            fqn.startsWith("requests.sessions.Session.") ||
-            "urllib.request.urlopen".equals(fqn)) {
+        if (fqn.startsWith("requests.api.")
+            || fqn.startsWith("requests.sessions.Session.")
+            || "urllib.request.urlopen".equals(fqn)) {
           return true;
         }
       }
@@ -54,7 +56,9 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
         Expression qualifier = qualExpr.qualifier();
         if (qualifier.is(Tree.Kind.NAME)) {
           String qualName = ((Name) qualifier).name();
-          return "requests".equals(qualName) || "session".equals(qualName) || qualName.contains("client");
+          return "requests".equals(qualName)
+              || "session".equals(qualName)
+              || qualName.contains("client");
         }
       }
     } else if (callee.is(Tree.Kind.NAME)) {
