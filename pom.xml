@@ -11,7 +11,7 @@
   <name>SonarQube Python :: Arakakiin Rules Plugin</name>
   <description>Python custom rules plugin for SonarQube</description>
 
-  <url>https://github.com/arakakiin/sonar-rules-arakakiin</url>
+  <url>https://github.com/arakaki-in/sonar-rules</url>
 
   <licenses>
     <license>
@@ -26,18 +26,27 @@
       <name>Everton Arakaki</name>
       <email>eveuca@gmail.com</email>
       <organization>Arakakiin</organization>
-      <organizationUrl>https://github.com/arakakiin</organizationUrl>
+      <organizationUrl>https://github.com/arakaki-in</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/arakakiin/sonar-rules-arakakiin.git</connection>
-    <developerConnection>scm:git:ssh://github.com:arakakiin/sonar-rules-arakakiin.git</developerConnection>
-    <url>https://github.com/arakakiin/sonar-rules-arakakiin/tree/main</url>
+    <connection>scm:git:git://github.com/arakaki-in/sonar-rules.git</connection>
+    <developerConnection>scm:git:ssh://github.com:arakaki-in/sonar-rules.git</developerConnection>
+    <url>https://github.com/arakaki-in/sonar-rules/tree/main</url>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/arakaki-in/sonar-rules</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
     <sonar.version>26.2.0.119303</sonar.version>
     <sonar.api.version>13.0.0.3026</sonar.api.version>
     <sonar.python.version>5.23.0.33560</sonar.python.version>
@@ -100,49 +109,28 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
         <executions>
           <execution>
-            <id>move-files</id>
-            <phase>initialize</phase>
+            <id>enforce-maven</id>
             <goals>
-              <goal>run</goal>
+              <goal>enforce</goal>
             </goals>
             <configuration>
-              <target>
-                <mkdir dir="src/main/java/com/arakakiin/sonar/python/checks" />
-                <mkdir dir="src/test/java/com/arakakiin/sonar/python/checks" />
-                <move todir="src/main/java/com/arakakiin/sonar/python" failonerror="false">
-                  <fileset dir="src/main/java/org/sonar/samples/python">
-                    <include name="*.java" />
-                  </fileset>
-                </move>
-                <move todir="src/main/java/com/arakakiin/sonar/python/checks" failonerror="false">
-                  <fileset dir="src/main/java/org/sonar/samples/python/checks">
-                    <include name="*.java" />
-                  </fileset>
-                </move>
-                <move todir="src/test/java/com/arakakiin/sonar/python" failonerror="false">
-                  <fileset dir="src/test/java/org/sonar/samples/python">
-                    <include name="*.java" />
-                  </fileset>
-                </move>
-                <move todir="src/test/java/com/arakakiin/sonar/python/checks" failonerror="false">
-                  <fileset dir="src/test/java/org/sonar/samples/python/checks">
-                    <include name="*.java" />
-                  </fileset>
-                </move>
-                <delete dir="src/main/java/org" failonerror="false" />
-                <delete dir="src/test/java/org" failonerror="false" />
-                <replace token="org.sonar.samples.python" value="com.arakakiin.sonar.python">
-                  <fileset dir="src" includes="**/*.java"/>
-                </replace>
-              </target>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.6.3,)</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[21,)</version>
+                </requireJavaVersion>
+              </rules>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
@@ -161,8 +149,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
-          <source>21</source>
-          <target>21</target>
+          <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
 
@@ -205,6 +192,42 @@
                 <include>**/*IT.java</include>
               </includes>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <!-- Generate Source JARs -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.0</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <!-- Generate Javadoc JARs -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.6.3</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

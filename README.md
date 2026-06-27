@@ -1,69 +1,148 @@
-# SonarQube Python Custom Rules Plugin
+# SonarQube Python Custom Rules Plugin (Arakakiin Rules)
 
-A professional SonarQube plugin that adds custom static analysis rules for Python. This plugin serves as a template and starting point for implementing custom Python rules inside SonarQube.
+[![CI/CD Pipeline](https://github.com/arakaki-in/sonar-rules/actions/workflows/release.yml/badge.svg)](https://github.com/arakaki-in/sonar-rules/actions/workflows/release.yml)
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Features
+A highly optimized SonarQube plugin implementing 16 advanced performance, resource management, database safety, and concurrency custom rules for Python static analysis.
 
-This plugin registers three custom rules under the repository `python-custom-rules-example`:
+---
 
-1. **Avoid File Open Without With (`AvoidFileOpenWithoutWithCheck`)**
-   - **Key**: `AvoidFileOpenWithoutWith`
-   - **Description**: Ensures that file operations use the `with` statement to guarantee proper resource cleanup.
-   - **Type**: Code Smell
+## 🚀 Features & Custom Rules
 
-2. **Custom Python Subscription Check (`CustomPythonSubscriptionCheck`)**
-   - **Key**: `subscription`
-   - **Description**: Demonstrates a syntax node consumer check that flags the use of `for` statements.
-   - **Type**: Code Smell
+This plugin registers 16 custom rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`).
 
-3. **Custom Python Visitor Check (`CustomPythonVisitorCheck`)**
-   - **Key**: `visitor`
-   - **Description**: Demonstrates a visitor-based check that flags function definitions in Python test files.
-   - **Type**: Code Smell
+### 1. Concurrency
+* **No Global Mutable State (`NoGlobalMutableState`)**
+  * Prevents the usage of global variables containing mutable types (like dictionaries, lists, or custom class instances) to avoid race conditions.
+* **ThreadLocal vs ContextVar (`ThreadLocalUsage`)**
+  * Promotes using modern, async-safe `contextvars.ContextVar` instead of legacy `threading.local` for scoping variables in concurrent environments.
+* **Immutable Data Transfer (`ImmutableDataTransfer`)**
+  * Enforces the use of immutable structures (e.g., `frozenset`, `tuple`, or read-only structures) when transferring data across concurrency boundaries.
 
-## Prerequisites
+### 2. Resource Management
+* **Enforce Connection Pooling (`EnforceConnectionPooling`)**
+  * Flags raw socket connections or single database connection initializations that bypass established connection pools.
+* **Context Managers Mandatory (`AvoidFileOpenWithoutWith`)**
+  * Ensures file, network, and database operations use `with` statements to guarantee correct resource allocation and cleanup.
+* **Mandatory Timeouts (`MandatoryTimeouts`)**
+  * Flags network requests (e.g., via the `requests` library) that do not specify an explicit timeout parameter, preventing hung threads.
 
-- **Java**: JDK 21
-- **Maven**: 3.6+
-- **SonarQube**: Compatible with SonarQube 9.9+ LTS and newer Community/Developer editions.
+### 3. Database Safety & Performance
+* **Zero N+1 Queries (`ZeroNPlusOneQueries`)**
+  * Detects database queries executed inside iterative loops, recommending batch loading instead.
+* **Avoid `SELECT *` on Heavy Tables (`AvoidSelectStar`)**
+  * Flags the use of `SELECT *` or unbound ORM queries on large tables to prevent unnecessary CPU and network overhead.
+* **Batch Operations Required (`BatchOperationsRequired`)**
+  * Recommends batch inserts/updates (e.g., `bulk_create`) when inserting or modifying multiple records in a loop.
+* **DB-Level Aggregation (`DbLevelAggregation`)**
+  * Restricts fetching all table records only to perform sums, counts, or averages in-memory in Python; enforces utilizing database aggregation functions.
 
-## Building the Plugin
+### 4. CPU & Memory Optimization
+* **Avoid Eager Regex Compilation (`AvoidEagerRegexCompilation`)**
+  * Recommends static compilation of regular expressions rather than repeatedly compiles within critical loop sections.
+* **Generators Over Lists for Large Data (`GeneratorsOverLists`)**
+  * Encourages using generators or iterators instead of building massive lists in memory when processing large files or query streams.
+* **Efficient String Concatenation (`EfficientStringConcatenation`)**
+  * Flags sequential string addition (`+` or `+=`) inside loops, recommending `''.join()` for optimized memory allocation.
+* **Use `__slots__` for High-Volume Objects (`UseSlots`)**
+  * Mandates defining `__slots__` in data models or instances that are instantiated in high volume to save RAM.
+* **Fast JSON Parsing (`FastJsonParsing`)**
+  * Recommends high-performance JSON libraries (like `orjson` or `ujson`) instead of standard `json` in performance-critical execution blocks.
 
-To compile the codebase and package the plugin into a deployable jar file, run:
+### 5. Logging & Error Handling
+* **Avoid Try/Except for Control Flow (`AvoidTryExceptControlFlow`)**
+  * Prevents using try/except exception blocks for normal, predictable control flow logic.
+
+---
+
+## 📋 Prerequisites
+
+* **Java**: JDK 21 (required to build and run)
+* **Maven**: 3.6.3 or newer
+* **SonarQube**: 9.9 LTS, 10.x, or newer
+
+---
+
+## 🛠️ Building the Plugin
+
+To compile the source code and build the plugin deployable JAR file:
 
 ```bash
 mvn clean package
 ```
 
-The compiled plugin jar file will be located at `target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar`.
+The output plugin JAR will be created at:
+`target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar`
 
-## Deployment
+---
 
-1. Copy the plugin jar file to your SonarQube server's extensions directory:
-   ```bash
-   cp target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar /path/to/sonarqube/extensions/plugins/
-   ```
-2. Restart the SonarQube server.
-3. Log in as an administrator, navigate to **Quality Profiles**, and activate the new rules under the Python language profile.
+## 💾 Installation & Local Running (Docker)
 
-## Running Tests
+1. Ensure you have built the plugin JAR using `mvn clean package`.
+2. Start a SonarQube container using Docker, mounting the plugin JAR directly into the extensions directory:
 
-### Unit Tests
+```bash
+docker run -d --name sonarqube \
+  -p 9000:9000 \
+  -v $(pwd)/target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar:/opt/sonarqube/extensions/plugins/arakakiin-rules-plugin-1.0-SNAPSHOT.jar \
+  sonarqube:community
+```
 
-Unit tests execute quickly using the `PythonCheckVerifier` test harness and do not require a running SonarQube instance:
+Alternatively, you can use Docker Compose:
 
+```yaml
+version: "3"
+services:
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar:/opt/sonarqube/extensions/plugins/arakakiin-rules-plugin-1.0-SNAPSHOT.jar
+```
+
+---
+
+## ⚙️ Rule Activation & Usage
+
+Once SonarQube is restarted, the custom rules must be activated in a **Quality Profile** associated with your target project:
+
+### Step 1: Create or Extend a Quality Profile
+1. Log into SonarQube as an **Administrator**.
+2. Navigate to **Quality Profiles** in the top navigation bar.
+3. Find the **Python** language section.
+4. Click **Create** to make a new custom Quality Profile (or copy/extend the default "Sonar way" profile).
+
+### Step 2: Activate the Arakakiin Custom Rules
+1. Click on the name of your custom Quality Profile.
+2. In the profile page, click **Activate More Rules**.
+3. Under the **Repository** filter on the left pane, select **Arakakiin Custom Rules**.
+4. Click **Bulk Activate** (or activate individual rules matching your needs).
+
+### Step 3: Associate the Quality Profile with Your Project
+1. Navigate to your project's main dashboard in SonarQube.
+2. Click **Project Settings** $\rightarrow$ **Quality Profiles**.
+3. Locate the **Python** row, click the dropdown menu, and select your custom Quality Profile.
+4. Run your next project analysis (e.g., using `sonar-scanner`). The new rules will automatically execute and report findings.
+
+---
+
+## 🧪 Testing
+
+### Running Unit Tests
+Unit tests use the `PythonCheckVerifier` harness to verify check logic against mock Python resources:
 ```bash
 mvn test
 ```
 
-### Integration Tests
-
-Integration tests run an embedded SonarQube server using the Sonar Orchestrator to verify rule registration, profile activation, and analysis execution:
-
+### Running Integration Tests
+Integration tests run a full SonarQube server instance via Sonar Orchestrator to verify plugin loading, API compliance, rule registration, and scanner report processing:
 ```bash
 mvn clean verify -Pintegration-tests
 ```
 
-## License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📄 License
+
+Licensed under the [MIT License](LICENSE).

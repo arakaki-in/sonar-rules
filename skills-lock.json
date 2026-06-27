@@ -19,6 +19,12 @@
       "skillPath": "skills/java-junit/SKILL.md",
       "computedHash": "fbf3cb0d47ffb44bdb6e1ebcc4d89dd7083208efdfc5b88f316c8bc2b58250b5"
     },
+    "java-maven": {
+      "source": "pluginagentmarketplace/custom-plugin-java",
+      "sourceType": "github",
+      "skillPath": "skills/java-maven/SKILL.md",
+      "computedHash": "ab7e888f64840a6db0e6f99b8aeed5d47d18214f6a72db36100272fcae8fcf41"
+    },
     "java-testing": {
       "source": "pluginagentmarketplace/custom-plugin-java",
       "sourceType": "github",
