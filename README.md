@@ -35,13 +35,13 @@ To compile the codebase and package the plugin into a deployable jar file, run:
 mvn clean package
 ```
 
-The compiled plugin jar file will be located at `target/sonar-rules-arakakiin-1.0-SNAPSHOT.jar`.
+The compiled plugin jar file will be located at `target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar`.
 
 ## Deployment
 
 1. Copy the plugin jar file to your SonarQube server's extensions directory:
    ```bash
-   cp target/sonar-rules-arakakiin-1.0-SNAPSHOT.jar /path/to/sonarqube/extensions/plugins/
+   cp target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar /path/to/sonarqube/extensions/plugins/
    ```
 2. Restart the SonarQube server.
 3. Log in as an administrator, navigate to **Quality Profiles**, and activate the new rules under the Python language profile.

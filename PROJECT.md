@@ -1,33 +1,21 @@
-# Project: SonarQube Custom Rules Refactoring & Open-Source Preparation
+# Project: SonarQube Custom Python Rules Open-Sourcing
 
 ## Architecture
-- Custom rules plugin for SonarQube.
-- Plugin loader: `CustomPythonRulesPlugin` (extends `org.sonar.api.Plugin`).
-- Rule registration: `RulesList` and `CustomPythonRuleRepository`.
-- Check classes: extend `PythonCheck` (or `PythonVisitorCheck` / `PythonSubscriptionCheck`).
-- Test suite: unit tests using `PythonCheckVerifier` and integration tests using `Sonar Orchestrator` to verify rule activations and issue counts.
-
-## Code Layout
-- Root POM: `/pom.xml`
-- Java Code: `/src/main/java/com/arakakiin/sonar/python/`
-  - Plugin Class: `/src/main/java/com/arakakiin/sonar/python/CustomPythonRulesPlugin.java`
-  - Repository Class: `/src/main/java/com/arakakiin/sonar/python/CustomPythonRuleRepository.java`
-  - Check Registration: `/src/main/java/com/arakakiin/sonar/python/RulesList.java`
-  - Rules: `/src/main/java/com/arakakiin/sonar/python/checks/`
-- Resources (HTML & JSON metadata): `/src/main/resources/org/sonar/l10n/python/rules/python/`
-- Unit Tests (Java): `/src/test/java/org/sonar/samples/python/checks/` -> to be migrated to `/src/test/java/com/arakakiin/sonar/python/checks/`
-- Test Python files (unit): `/src/test/resources/checks/`
-- Integration Tests (Java): `/src/test/java/com/arakakiin/sonar/CustomRulesIntegrationTest.java` -> to be migrated to `/src/test/java/com/arakakiin/sonar/python/CustomRulesIntegrationTest.java`
+- Language/Framework: Java 21, Maven, SonarQube Python Analyzer API.
+- Source Code layout:
+  - Custom rules located in Java package `com.arakakiin.sonar.python` (migrated from `org.sonar.samples.python`).
+  - Unit tests verify checks using `PythonCheckVerifier` harness.
+  - Integration tests use Sonar Orchestrator to spin up SonarQube and run analysis.
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| 1 | Maven & Repository Config | Change maven properties in pom.xml, modify repository key & name in repository class | none | PLANNED |
-| 2 | Package Migration | Move all Java files to `com.arakakiin.sonar.python` and update imports/packages | M1 | PLANNED |
-| 3 | Template Removal | Delete `CustomPythonSubscriptionCheck`, `CustomPythonVisitorCheck` and their associated tests, resource files, and registration | M2 | PLANNED |
-| 4 | Test Consolidation | Delete `src/test/resources/sample-python-project/` and adapt integration test to run checks directly on `src/test/resources/checks/` | M3 | PLANNED |
-| 5 | Validation & Integrity Audit | Execute build and full test suite (`mvn clean test`, `mvn clean verify -Pintegration-tests`), run Forensic Auditor, verify layout | M4 | PLANNED |
+| 1 | Exploration & Initial Verification | Run initial Maven build & check codebase layout | none | DONE |
+| 2 | Maven & Packaging Refactoring | Update pom.xml and move all Java files to com.arakakiin.sonar.python | M1 | IN_PROGRESS (87ec0160-78d8-4934-806f-7c2b57d0403e) |
+| 3 | Rule Repository Keys & Metadata | Change REPOSITORY_KEY to arakakiin-rules and name to Arakakiin Custom Rules | M2 | PLANNED |
+| 4 | Clean Placeholder Checks | Delete CustomPythonSubscriptionCheck / CustomPythonVisitorCheck and their resource/test files | M2 | PLANNED |
+| 5 | Test Resources Consolidation & Scanner Setup | Delete sample project, move all test files to checks/, program scanner in integration test | M2, M3, M4 | PLANNED |
+| 6 | E2E & Final Verification | Run full suite of unit and integration tests | M5 | PLANNED |
 
 ## Interface Contracts
-- **RulesList ↔ CustomPythonRuleRepository**: `RulesList.getChecks()` returns the list of all registered custom rule classes to be defined in the repository.
-- **CustomRulesIntegrationTest ↔ SonarQube Scanner API**: Programmatically points the SonarScanner to `src/test/resources/checks` using project key `sample-python-project`.
+- Rules registration: `RulesList.java` provides checks list to `CustomPythonRuleRepository.java` which is registered in `CustomPythonRulesPlugin.java`.

@@ -99,6 +99,51 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>move-files</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="src/main/java/com/arakakiin/sonar/python/checks" />
+                <mkdir dir="src/test/java/com/arakakiin/sonar/python/checks" />
+                <move todir="src/main/java/com/arakakiin/sonar/python" failonerror="false">
+                  <fileset dir="src/main/java/org/sonar/samples/python">
+                    <include name="*.java" />
+                  </fileset>
+                </move>
+                <move todir="src/main/java/com/arakakiin/sonar/python/checks" failonerror="false">
+                  <fileset dir="src/main/java/org/sonar/samples/python/checks">
+                    <include name="*.java" />
+                  </fileset>
+                </move>
+                <move todir="src/test/java/com/arakakiin/sonar/python" failonerror="false">
+                  <fileset dir="src/test/java/org/sonar/samples/python">
+                    <include name="*.java" />
+                  </fileset>
+                </move>
+                <move todir="src/test/java/com/arakakiin/sonar/python/checks" failonerror="false">
+                  <fileset dir="src/test/java/org/sonar/samples/python/checks">
+                    <include name="*.java" />
+                  </fileset>
+                </move>
+                <delete dir="src/main/java/org" failonerror="false" />
+                <delete dir="src/test/java/org" failonerror="false" />
+                <replace token="org.sonar.samples.python" value="com.arakakiin.sonar.python">
+                  <fileset dir="src" includes="**/*.java"/>
+                </replace>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <version>1.23.0.740</version>
@@ -126,6 +171,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.1.2</version>
         <configuration>
+          <reuseForks>false</reuseForks>
           <excludes>
             <!-- Do not run integration tests in the standard test phase -->
             <exclude>**/*IntegrationTest.java</exclude>
