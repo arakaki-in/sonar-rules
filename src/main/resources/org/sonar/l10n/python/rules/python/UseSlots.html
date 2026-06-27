@@ -1,0 +1,22 @@
+<p>This rule checks that high-volume data classes (e.g. classes ending in Model, DTO, Payload, Event, etc., or dataclasses) define <code>__slots__</code>.</p>
+<p>By default, Python class instances have a dictionary <code>__dict__</code> to store their attributes. This dictionary consumes a significant amount of memory. Defining <code>__slots__</code> reserves space for the declared attributes and prevents <code>__dict__</code> creation, dramatically reducing memory usage and slightly improving attribute access speed. For standard Python dataclasses, you can use <code>@dataclass(slots=True)</code>.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+from dataclasses import dataclass
+
+@dataclass
+class UserDTO:  # Noncompliant (lacks __slots__)
+    id: int
+    name: str
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+from dataclasses import dataclass
+
+@dataclass(slots=True)
+class UserDTO:  # Compliant
+    id: int
+    name: str
+</pre>

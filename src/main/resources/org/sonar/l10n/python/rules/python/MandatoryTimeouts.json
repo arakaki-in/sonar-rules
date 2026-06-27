@@ -1,0 +1,15 @@
+{
+  "title": "Configure explicit timeouts for network operations",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "performance",
+    "reliability",
+    "custom-python"
+  ],
+  "defaultSeverity": "Critical"
+}

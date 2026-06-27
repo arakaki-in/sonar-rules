@@ -1,0 +1,13 @@
+<p>This rule detects in-memory aggregation of database query results (e.g., using <code>len()</code> or <code>sum()</code> on query results).</p>
+<p>Fetching all rows from the database to aggregate them in application memory is highly inefficient and memory-intensive. Database engines are optimized for aggregation. You should use database aggregation functions (like <code>COUNT()</code>, <code>SUM()</code>, <code>AVG()</code>) to aggregate data directly in the query.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+users = session.query(User).all()
+num_users = len(users)  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+num_users = session.query(func.count(User.id)).scalar()  # Compliant
+</pre>

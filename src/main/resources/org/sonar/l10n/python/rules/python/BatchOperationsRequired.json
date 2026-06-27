@@ -1,0 +1,15 @@
+{
+  "title": "Use batch operations instead of executing single-row DB statements in a loop",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "performance",
+    "database",
+    "custom-python"
+  ],
+  "defaultSeverity": "Critical"
+}

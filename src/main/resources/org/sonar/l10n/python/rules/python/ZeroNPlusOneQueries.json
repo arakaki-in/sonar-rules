@@ -1,0 +1,15 @@
+{
+  "title": "Avoid executing database queries inside loops",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "performance",
+    "database",
+    "custom-python"
+  ],
+  "defaultSeverity": "Critical"
+}

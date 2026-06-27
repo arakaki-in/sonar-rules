@@ -1,0 +1,15 @@
+{
+  "title": "Use contextvars instead of threading.local",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "concurrency",
+    "asyncio",
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

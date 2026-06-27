@@ -1,0 +1,15 @@
+{
+  "title": "Avoid global mutable state",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "concurrency",
+    "multi-threading",
+    "custom-python"
+  ],
+  "defaultSeverity": "Critical"
+}

@@ -1,0 +1,29 @@
+<p>This rule enforces connection pooling for database and HTTP network resources.</p>
+<p>Creating raw database connections (e.g. via <code>psycopg2.connect</code>) or initiating raw HTTP calls (e.g. <code>requests.get</code>) repeatedly or inside loops is extremely expensive. It leads to socket exhaustion, high latency, and database resource starvation. Instead, use connection pooling or session objects to reuse TCP connections.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+import sqlite3
+import requests
+
+# Direct raw connection call
+conn = sqlite3.connect("db.sqlite")  # Noncompliant
+
+# HTTP calls inside a loop
+for url in urls:
+    requests.get(url)  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+import requests
+from sqlalchemy import create_engine
+
+# Use SQLAlchemy engine for database connections (pooled by default)
+engine = create_engine("sqlite:///db.sqlite")
+
+# Use requests.Session to reuse TCP connections across HTTP requests
+with requests.Session() as session:
+    for url in urls:
+        session.get(url)  # Compliant
+</pre>

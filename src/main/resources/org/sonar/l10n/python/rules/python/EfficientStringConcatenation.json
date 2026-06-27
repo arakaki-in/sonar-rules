@@ -1,0 +1,14 @@
+{
+  "title": "Avoid string concatenation in loops using + or +=",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "performance",
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Use __slots__ for high-volume objects",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "performance",
+    "memory",
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

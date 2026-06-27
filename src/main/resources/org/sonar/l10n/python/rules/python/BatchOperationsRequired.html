@@ -1,0 +1,13 @@
+<p>This rule detects single-row database modifications (like <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, or <code>session.add()</code>) executed inside a loop.</p>
+<p>Running single-row write operations in a loop creates significant overhead due to database transaction coordination, locking, and network roundtrips. Batch or bulk operation APIs (like <code>executemany()</code>, bulk insert APIs, or <code>session.add_all()</code>) should be used instead.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+for user in users:
+    session.add(user)  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+session.add_all(users)  # Compliant
+</pre>

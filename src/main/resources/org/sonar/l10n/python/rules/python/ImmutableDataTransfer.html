@@ -1,0 +1,24 @@
+<p>This rule ensures that data passed to threads, processes, or shared queues is immutable.</p>
+<p>Passing mutable objects (like lists, dicts, or sets) across thread or process boundaries creates shared mutable state, resulting in data races, memory corruption, and synchronization issues. Data transferred between execution environments should be represented as immutable structures like tuples, frozensets, or frozen dataclasses.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+import threading
+import queue
+
+q = queue.Queue()
+q.put([1, 2, 3])  # Noncompliant
+
+t = threading.Thread(target=worker, args=([1, 2],))  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+import threading
+import queue
+
+q = queue.Queue()
+q.put((1, 2, 3))  # Compliant (Tuple)
+
+t = threading.Thread(target=worker, args=((1, 2),))  # Compliant
+</pre>

@@ -1,0 +1,14 @@
+<p>This rule detects the use of <code>SELECT *</code> in SQL queries.</p>
+<p>Using <code>SELECT *</code> pulls all columns from the database tables. This increases the amount of data transferred over the network and increases database I/O, particularly on tables with heavy or unused columns. Always project only the columns actually required by the application.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+query = "SELECT * FROM users"  # Noncompliant
+cursor.execute(query)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+query = "SELECT id, name FROM users"  # Compliant
+cursor.execute(query)
+</pre>

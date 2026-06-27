@@ -4,12 +4,16 @@
  */
 package org.sonar.samples.python.checks;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
+@DisplayName("Custom Python Subscription Check Test Suite")
 class CustomPythonSubscriptionCheckTest {
+
   @Test
-  void test() {
+  @DisplayName("Should flag for loop statements in Python source files")
+  void verify_subscription_check_flags_for_loops() {
     PythonCheckVerifier.verify("src/test/resources/checks/customPythonSubscriptionCheck.py", new CustomPythonSubscriptionCheck());
   }
 }

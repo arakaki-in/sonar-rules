@@ -1,0 +1,15 @@
+{
+  "title": "Enforce connection pooling",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "25min"
+  },
+  "tags": [
+    "performance",
+    "resources",
+    "custom-python"
+  ],
+  "defaultSeverity": "Critical"
+}

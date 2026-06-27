@@ -1,0 +1,15 @@
+<p>This rule detects when <code>try-except</code> blocks are used to control standard application flow, particularly for checking dictionary keys, accessing attributes, or checking indices.</p>
+<p>Exceptions in Python are relatively expensive to construct and handle. Using <code>try-except</code> for standard, expected control flow (such as key presence checks) is slower than using explicit conditionals like <code>dict.get()</code>, <code>in</code> operator, <code>hasattr()</code>, or index bounds checking. Additionally, using exceptions for control flow makes debugging and code readability harder.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+try:
+    value = my_dict["key"]  # Noncompliant
+except KeyError:
+    value = "default"
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+value = my_dict.get("key", "default")  # Compliant
+</pre>

@@ -1,0 +1,16 @@
+<p>This rule detects the use of standard library <code>json.loads()</code> and <code>json.dumps()</code>.</p>
+<p>For high-performance JSON operations, third-party libraries like <code>orjson</code> or <code>ujson</code> are significantly faster than Python's built-in <code>json</code> library. They are written in C or Rust and offer substantial speed improvements, particularly for large payloads or complex nested structures.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+import json
+
+data = json.loads(payload)  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+import orjson
+
+data = orjson.loads(payload)  # Compliant
+</pre>

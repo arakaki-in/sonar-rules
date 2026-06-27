@@ -1,0 +1,15 @@
+{
+  "title": "Enforce immutable data transfer across concurrency boundaries",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "concurrency",
+    "multi-threading",
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

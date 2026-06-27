@@ -1,0 +1,15 @@
+{
+  "title": "Avoid using try-except blocks for standard control flow",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "performance",
+    "reliability",
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

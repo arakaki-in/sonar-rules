@@ -35,7 +35,22 @@ class CustomRulesIntegrationTest {
 
   private static final List<String> RULE_KEYS = List.of(
       "python-custom-rules-example:AvoidFileOpenWithoutWith",
-      "python-custom-rules-example:subscription"
+      "python-custom-rules-example:subscription",
+      "python-custom-rules-example:NoGlobalMutableState",
+      "python-custom-rules-example:ThreadLocalUsage",
+      "python-custom-rules-example:ImmutableDataTransfer",
+      "python-custom-rules-example:EnforceConnectionPooling",
+      "python-custom-rules-example:MandatoryTimeouts",
+      "python-custom-rules-example:ZeroNPlusOneQueries",
+      "python-custom-rules-example:AvoidSelectStar",
+      "python-custom-rules-example:BatchOperationsRequired",
+      "python-custom-rules-example:DbLevelAggregation",
+      "python-custom-rules-example:AvoidEagerRegexCompilation",
+      "python-custom-rules-example:GeneratorsOverLists",
+      "python-custom-rules-example:EfficientStringConcatenation",
+      "python-custom-rules-example:UseSlots",
+      "python-custom-rules-example:FastJsonParsing",
+      "python-custom-rules-example:AvoidTryExceptControlFlow"
   );
 
   @RegisterExtension

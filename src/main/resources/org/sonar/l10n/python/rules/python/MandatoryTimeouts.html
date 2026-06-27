@@ -1,0 +1,17 @@
+<p>This rule enforces that all network operations (like HTTP requests) have explicit, non-default timeouts configured.</p>
+<p>Libraries like <code>requests</code> in Python do not configure default timeouts, which means requests will hang indefinitely if the remote server does not respond. This blocks worker threads or event loops, leading to resource depletion and cascading service failures. Always specify a timeout value (in seconds) that is not <code>None</code>.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+import requests
+
+requests.get("https://example.com")  # Noncompliant (No timeout)
+requests.post("https://example.com", timeout=None)  # Noncompliant (Explicit None)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+import requests
+
+requests.get("https://example.com", timeout=5)  # Compliant (5 seconds timeout)
+</pre>

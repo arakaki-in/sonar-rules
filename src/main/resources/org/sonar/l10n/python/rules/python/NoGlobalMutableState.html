@@ -1,0 +1,23 @@
+<p>This rule detects global mutable state by flagging the use of the <code>global</code> keyword and the declaration of mutable objects (like lists, dicts, sets, or custom class instances) at the module level.</p>
+<p>Global mutable state introduces severe thread-safety and concurrency hazards, leading to race conditions, unpredictable behaviors, and memory leaks when multiple threads or coroutines run concurrently.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+shared_list = []  # Noncompliant
+
+def add_item(item):
+    global counter  # Noncompliant
+    shared_list.append(item)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+import contextvars
+
+# Use thread-safe or task-safe context variables instead of global mutable objects
+shared_items = contextvars.ContextVar("shared_items", default=tuple())
+
+def add_item(item):
+    current = shared_items.get()
+    shared_items.set(current + (item,))
+</pre>

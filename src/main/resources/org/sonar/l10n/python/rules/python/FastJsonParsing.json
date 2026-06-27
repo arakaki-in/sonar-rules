@@ -1,0 +1,14 @@
+{
+  "title": "Use fast JSON library for parsing and serialization",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "custom-python"
+  ],
+  "defaultSeverity": "Minor"
+}

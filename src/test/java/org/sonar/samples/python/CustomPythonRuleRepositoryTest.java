@@ -25,7 +25,7 @@ class CustomPythonRuleRepositoryTest {
     assertThat(customPythonRuleRepository.repositoryKey()).isEqualTo("python-custom-rules-example");
     assertThat(context.repositories()).hasSize(1).extracting("key").containsExactly(customPythonRuleRepository.repositoryKey());
     var rules = context.repositories().get(0).rules();
-    assertThat(rules).hasSize(3);
-    assertThat(customPythonRuleRepository.checkClasses()).hasSize(3);
+    assertThat(rules).hasSize(18);
+    assertThat(customPythonRuleRepository.checkClasses()).hasSize(18);
   }
 }

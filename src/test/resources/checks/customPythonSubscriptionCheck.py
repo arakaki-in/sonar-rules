@@ -1,4 +1,4 @@
-class A:
-  for i in foo: # Noncompliant {{For statement.}}
-# ^^^
-    pass
+def run_loop():
+    for i in foo: # Noncompliant {{For statement.}}
+#   ^^^
+        pass

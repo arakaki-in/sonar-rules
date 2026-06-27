@@ -1,0 +1,15 @@
+{
+  "title": "Perform aggregation at the database level instead of in-memory",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "performance",
+    "database",
+    "custom-python"
+  ],
+  "defaultSeverity": "Major"
+}

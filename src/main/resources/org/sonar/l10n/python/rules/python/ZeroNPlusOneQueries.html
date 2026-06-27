@@ -1,0 +1,16 @@
+<p>This rule detects when database queries are executed inside a loop, causing the N+1 query problem.</p>
+<p>Executing queries inside a loop leads to severe performance degradation because it incurs network latency and database overhead for every iterated item. Instead, retrieve all required data in a single batch query (e.g. using SQL joins, prefetching, or bulk queries) before entering the loop.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+for user_id in user_ids:
+    user = session.query(User).filter(User.id == user_id).first()  # Noncompliant
+    print(user.name)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+users = session.query(User).filter(User.id.in_(user_ids)).all()  # Compliant
+for user in users:
+    print(user.name)
+</pre>

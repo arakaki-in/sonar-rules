@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.sonar.samples.python</groupId>
-  <artifactId>sonar-rules-arakakiin</artifactId>
+  <groupId>com.arakakiin.sonar</groupId>
+  <artifactId>arakakiin-rules-plugin</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>sonar-plugin</packaging>
 
@@ -104,7 +104,7 @@
         <version>1.23.0.740</version>
         <extensions>true</extensions>
         <configuration>
-          <pluginClass>org.sonar.samples.python.CustomPythonRulesPlugin</pluginClass>
+          <pluginClass>com.arakakiin.sonar.python.CustomPythonRulesPlugin</pluginClass>
           <requirePlugins>python:${sonar.python.version}</requirePlugins>
           <pluginApiMinVersion>${pluginApiMinVersion}</pluginApiMinVersion>
           <requiredForLanguages>py,ipynb</requiredForLanguages>

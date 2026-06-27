@@ -1,0 +1,12 @@
+<p>This rule detects the use of list comprehensions inside functions like <code>sum()</code>, <code>any()</code>, <code>all()</code>, <code>min()</code>, <code>max()</code>, or <code>join()</code>.</p>
+<p>List comprehensions allocate a full list in memory before passing it to the function. For large datasets, this wastes memory. Passing a generator expression (which does not have brackets <code>[]</code>) allows the elements to be streamed and processed lazily, reducing memory allocation to $O(1)$.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+total = sum([item.price for item in items])  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+total = sum(item.price for item in items)  # Compliant
+</pre>

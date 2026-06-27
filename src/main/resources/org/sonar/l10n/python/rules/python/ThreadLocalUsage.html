@@ -1,0 +1,18 @@
+<p>This rule detects usages of <code>threading.local</code> and suggests using <code>contextvars.ContextVar</code> instead.</p>
+<p>In modern asynchronous Python applications (e.g. using <code>asyncio</code> or FastAPI), multiple coroutines are executed concurrently on the same OS thread. Since <code>threading.local</code> is only thread-safe and not coroutine-safe, all coroutines on the same thread share the same data. This leads to severe race conditions, transaction leaks, and data corruption across concurrent requests.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+import threading
+
+request_ctx = threading.local()  # Noncompliant
+request_ctx.user_id = 42
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+import contextvars
+
+request_ctx = contextvars.ContextVar("request_ctx", default=None)  # Compliant
+request_ctx.set(42)
+</pre>

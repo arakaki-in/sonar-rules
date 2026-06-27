@@ -1,0 +1,17 @@
+<p>This rule detects repeated string concatenation using the <code>+</code> or <code>+=</code> operators inside a loop.</p>
+<p>Because Python strings are immutable, concatenating strings creates a new string object and copies the contents of both operands. Inside a loop, this leads to $O(N^2)$ time complexity. For optimal performance, append strings to a list inside the loop and use <code>"".join()</code> at the end.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+result_str = ""
+for line in lines:
+    result_str += line  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+parts = []
+for line in lines:
+    parts.append(line)
+result_str = "".join(parts)  # Compliant
+</pre>

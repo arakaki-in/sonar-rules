@@ -1,0 +1,14 @@
+{
+  "title": "Use generator expressions instead of list comprehensions for aggregation",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "custom-python"
+  ],
+  "defaultSeverity": "Minor"
+}
