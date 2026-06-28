@@ -161,6 +161,9 @@
           <version>${spotless-maven-plugin.version}</version>
           <configuration>
             <java>
+              <licenseHeader>
+                <file>${project.basedir}/src/main/resources/license-header.txt</file>
+              </licenseHeader>
               <googleJavaFormat>
                 <version>1.17.0</version>
                 <style>GOOGLE</style>

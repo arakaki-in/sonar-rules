@@ -1,6 +1,6 @@
 /*
- * Copyright (C) SonarSource Sàrl - mailto:info AT sonarsource DOT com
- * This code is released under [MIT No Attribution](https://opensource.org/licenses/MIT-0) license.
+ * Copyright (C) 2026 Everton Arakaki
+ * SPDX-License-Identifier: MIT
  */
 @ParametersAreNonnullByDefault
 package com.arakakiin.sonar.python.checks;
