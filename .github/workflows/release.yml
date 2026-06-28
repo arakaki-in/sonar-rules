@@ -48,11 +48,15 @@ jobs:
     name: Publish Release
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]'))
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -60,6 +64,43 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Determine if we need to bump version
+        id: check_bump
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "should_bump=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_bump=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run version bump script
+        id: bump
+        if: steps.check_bump.outputs.should_bump == 'true'
+        run: |
+          ./.github/scripts/bump-version.sh
+
+      - name: Commit, Tag, and Push Version Bump
+        if: steps.check_bump.outputs.should_bump == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add pom.xml
+          git commit -m "chore(release): bump version to ${{ steps.bump.outputs.new_version }} [skip ci]"
+          git tag "v${{ steps.bump.outputs.new_version }}"
+          
+          git push origin main
+          git push origin "v${{ steps.bump.outputs.new_version }}"
+
+      - name: Get Release Tag Name
+        id: release_tag
+        run: |
+          if [ "${{ steps.check_bump.outputs.should_bump }}" = "true" ]; then
+            echo "tag_name=v${{ steps.bump.outputs.new_version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag_name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Package JAR
         run: mvn clean package -DskipTests -B
@@ -77,6 +118,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.release_tag.outputs.tag_name }}
           files: |
             target/arakakiin-rules-plugin-*.jar
             target/arakakiin-rules-plugin-*.jar.asc
