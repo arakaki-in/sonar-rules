@@ -186,3 +186,97 @@ Integrity mode: development
 
 * Note: The user has updated `pom.xml` to configure `<autoUpdate>false</autoUpdate>` and `<failOnError>false</failOnError>` on the OWASP dependency-check-maven plugin.
 * New Requirement: We need to update the agent harness rules inside `AGENTS.md` (located in the workspace root). The update must state that any future contribution or task is only considered successfully completed and ready for delivery/merge once all the newly integrated checks (Spotless formatting, JaCoCo test coverage, and OWASP dependency checks) pass successfully.
+
+## Follow-up — 2026-07-02T23:24:41+02:00
+
+Configure a Python test and benchmarking setup using `uv`, integrated directly into the Maven build pipeline so it is executed during `mvn test`.
+
+Working directory: /home/everton/arakakiin/regras-python/sonar-rules-arakakiin
+Integrity mode: development
+
+## Requirements
+
+### R1. Python Environment and Test Integration via Maven
+- Initialize the python project environment in the repository using `uv`. All python libraries (e.g., Pandas, pytest, httpx) must have their versions pinned.
+- Implement a JUnit test class in the Java test suite (e.g. `PythonBenchmarksTest.java`) that executes the python test suite by invoking `uv run pytest` as a subprocess.
+- Ensure the setup runs against multiple versions of Python (from 3.10 to 3.13) to verify compatibility and measure version-specific performance changes.
+- In the custom SonarQube rule description HTML files, add recommendations suggesting to the user if upgrading their Python version will bring performance gains for that specific pattern.
+- Ensure that this JUnit test runs during the standard `mvn test` phase, and fails the Maven build if any Python benchmark test fails.
+- Follow testing pyramid best practices inside Maven, cleanly separating unit tests, integration tests, and the benchmarking/performance pipeline.
+
+### R2. Library-Specific Performance Verification Benchmarks
+- Provide Python pytest benchmarks under `python_benchmarks/` showing clear performance comparisons for the active rules.
+- Do not include assertions or tests verifying deleted/nonsense rules.
+- Implement tests verifying performance under the following library scenarios:
+  1. **FastAPI & HTTP Clients**: Show async non-blocking operations vs. blocking operations (requests vs. httpx/aiohttp) under concurrency.
+  2. **SQLAlchemy Queries**: Compare bulk/batch operations or optimized query patterns against sequential row loops or unoptimized ORM lookups.
+  3. **Pandas & NumPy Vectorization**: Compare vectorized operations against standard python loops (e.g. `.iterrows()`) on datasets of at least 1,000 rows.
+  4. **Standard library collections**: Compare `collections.deque` against list left insert/pop operations.
+
+### R3. Extensible Test Harness
+- Structure the test harness in both Java and Python to be highly modular and documented so that developers cloning the repository can easily add or edit rules.
+
+### R4. GitHub Actions CI/CD Pipeline Integration
+- Add or configure a GitHub Actions workflow (e.g. `.github/workflows/ci.yml`) to automatically run the entire Maven and Python benchmark test pipeline on every pull request.
+
+## Acceptance Criteria
+
+### Test Execution & Integration
+- [ ] Running `mvn test` automatically bootstraps the `uv` environment, runs the Python benchmarks, and reports them as part of the Maven test suite.
+- [ ] All 19 active Sonar rules are validated by their corresponding benchmark tests proving their performance/correctness value.
+- [ ] Benchmark execution metrics are logged, comparing Python versions where possible.
+- [ ] The Java build passes spotless checks and tests compile and run successfully.
+- [ ] The GitHub Actions configuration successfully runs and tests both Maven/Java and uv/Python.
+
+## Follow-up — 2026-07-02T21:38:15Z
+
+Configure a Python test and benchmarking setup using `uv`, integrated directly into the Maven build pipeline so it is executed during `mvn test`.
+
+Working directory: /home/everton/arakakiin/regras-python/sonar-rules-arakakiin
+Integrity mode: development
+
+> IMPORTANT: Most implementation files already exist from a previous run. Your PRIMARY task is to:
+> 1. Audit and fix any issues with existing files
+> 2. Run `mvn spotless:apply && mvn clean test` to verify everything passes
+> 3. Commit all changes on a new branch `feature/python-benchmarks-uv` and open a GitHub Pull Request
+>
+> Do NOT regenerate files that already exist and are correct. Check them first.
+
+## What already exists (verify and fix if needed)
+- `pyproject.toml` — uv python project with pinned deps (pytest==8.2.2, pandas==2.2.2, sqlalchemy==2.0.31, httpx==0.27.0, fastapi==0.111.0, numpy==1.26.4, aiohttp==3.9.5, requests==2.32.3)
+- `uv.lock` — pinned lockfile
+- `python_benchmarks/test_deque.py` — deque vs list benchmarks
+- `python_benchmarks/test_fastapi.py` — async vs sync HTTP benchmarks
+- `python_benchmarks/test_pandas.py` — vectorized vs iterrows benchmarks
+- `python_benchmarks/test_sqlalchemy.py` — bulk vs sequential ORM benchmarks
+- `src/test/java/com/arakakiin/sonar/python/checks/PythonBenchmarksTest.java` — JUnit class invoking `uv run pytest`
+- `.github/workflows/ci.yml` — GitHub Actions pipeline
+- Updated HTML rule description files with Python upgrade recommendations
+
+## Requirements
+
+### R1. Python Environment and Test Integration via Maven
+- All python libraries must have their versions pinned in `pyproject.toml`.
+- The JUnit test class `PythonBenchmarksTest.java` must execute the python test suite by invoking `uv run pytest` as a subprocess.
+- The setup must run against multiple versions of Python (from 3.10 to 3.13).
+- The SonarQube rule description HTML files must contain recommendations about Python version upgrade performance gains.
+- This JUnit test must run during the standard `mvn test` phase and fail the Maven build if any Python benchmark test fails.
+- Follow testing pyramid best practices in Maven: unit tests, integration tests, and benchmarking pipeline cleanly separated.
+
+### R2. Library-Specific Performance Verification Benchmarks
+- Python pytest benchmarks under `python_benchmarks/` must show clear performance comparisons for the active rules.
+- Do NOT include tests for deleted/nonsense rules.
+- Cover: FastAPI & HTTP Clients, SQLAlchemy bulk vs sequential, Pandas vectorization vs iterrows (1,000+ rows), collections.deque vs list left insert.
+
+### R3. Extensible Test Harness
+- Structure the harness (both Java and Python) to be modular and documented so developers can easily add/edit rules.
+
+### R4. GitHub Actions CI/CD Pipeline
+- `.github/workflows/ci.yml` must trigger on pull requests and run the full Maven + Python benchmark pipeline.
+
+## Acceptance Criteria
+- [ ] `mvn spotless:check` passes with no formatting violations.
+- [ ] `mvn clean test` passes with all Java unit tests AND Python benchmarks green.
+- [ ] All active Sonar rules are covered by at least one benchmark test.
+- [ ] Changes are committed on branch `feature/python-benchmarks-uv` and a GitHub Pull Request is opened against `main` on `arakaki-in/sonar-rules` with a benchmark summary as the PR description.
+- [ ] The GitHub Actions CI config is valid and triggers on pull_request events.

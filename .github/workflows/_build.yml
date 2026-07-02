@@ -1,0 +1,66 @@
+name: Build and Test (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        type: string
+        default: '21'
+        description: 'JDK version to use'
+      run-benchmarks:
+        type: boolean
+        default: true
+        description: 'Whether to run Python benchmarks'
+      run-security-audit:
+        type: boolean
+        default: true
+        description: 'Whether to run OWASP dependency check'
+
+jobs:
+  build:
+    name: Build (JDK ${{ inputs.java-version }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ inputs.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up uv
+        if: inputs.run-benchmarks
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python versions
+        if: inputs.run-benchmarks
+        run: |
+          uv python install 3.10 3.11 3.12 3.13
+
+      - name: Verify Java code formatting
+        run: mvn spotless:check -B
+
+      - name: Run unit tests
+        run: mvn clean test -B
+
+      - name: Run integration tests
+        run: mvn verify -Pintegration-tests -B
+
+      - name: Run security audit
+        if: inputs.run-security-audit
+        run: mvn verify -Psecurity-audit -DskipTests -B
+
+      - name: Archive JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report-jdk${{ inputs.java-version }}
+          path: target/site/jacoco/jacoco.xml
+          if-no-files-found: warn
+          retention-days: 7
