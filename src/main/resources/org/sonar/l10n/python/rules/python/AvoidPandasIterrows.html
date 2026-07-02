@@ -1,6 +1,14 @@
 <p>This rule detects the use of pandas <code>iterrows()</code>.</p>
 <p><code>iterrows()</code> is extremely slow because it has to create a pandas Series for each row. Vectorized operations, <code>itertuples()</code>, or <code>apply()</code> should be preferred instead.</p>
 
+<h2>Performance & Upgrade Recommendations</h2>
+<ul>
+  <li><strong>Avoid <code>iterrows()</code> on large datasets:</strong> Since <code>iterrows()</code> creates a pandas <code>Series</code> object for every single row, it introduces significant CPU and memory allocation overhead. It is typically 100x to 1000x slower than vectorized approaches.</li>
+  <li><strong>Use Vectorized Operations:</strong> Always prefer built-in pandas/numpy vectorized calculations (e.g. <code>df['C'] = df['A'] + df['B']</code>) as they execute in optimized C-code under the hood.</li>
+  <li><strong>Use <code>itertuples()</code> as a fallback:</strong> If you must loop over rows, use <code>itertuples(index=False)</code>. It returns a lightweight <code>namedtuple</code> per row, bypassing the overhead of creating a <code>Series</code> object.</li>
+  <li><strong>CPython 3.11+ Interpreter Speedups:</strong> Upgrading to CPython 3.11+ activates the specializing adaptive interpreter (PEP 659), which dynamically optimizes bytecode for loop executions, further accelerating iteration patterns when they cannot be completely vectorized.</li>
+</ul>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
 for index, row in df.iterrows():  # Noncompliant

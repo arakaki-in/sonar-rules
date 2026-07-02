@@ -1,6 +1,14 @@
 <p>This rule detects when database queries are executed inside a loop, causing the N+1 query problem.</p>
 <p>Executing queries inside a loop leads to severe performance degradation because it incurs network latency and database overhead for every iterated item. Instead, retrieve all required data in a single batch query (e.g. using SQL joins, prefetching, or bulk queries) before entering the loop.</p>
 
+<h2>Performance & Upgrade Recommendations</h2>
+<ul>
+  <li><strong>Database Round-Trips:</strong> Executing a SQL query inside a loop executes N queries for N elements (N+1 query problem). This amplifies network latency and resource consumption exponentially.</li>
+  <li><strong>Eager Loading with Joins:</strong> In SQLAlchemy, use <code>options(joinedload(Model.relationship))</code> to load related objects in a single query via SQL JOINs.</li>
+  <li><strong>Batch Fetching:</strong> Use IN-clauses (e.g. <code>Model.id.in_(ids)</code>) to retrieve all records in a single query before performing iterations.</li>
+  <li><strong>CPython 3.11+ Interpreter Speedups:</strong> Running under CPython 3.11+ leverages adaptive specialization (PEP 659) to significantly reduce the overhead of Python-level loops, object instantiations, and attribute accesses when fetching query results.</li>
+</ul>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
 for user_id in user_ids:
