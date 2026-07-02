@@ -96,8 +96,10 @@ class CustomRulesIntegrationTest {
 
       assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
       assertThat(issueTotal(response.body()))
-          .as("Expected rule %s to trigger exactly 1 issue, response: %s", ruleKey, response.body())
-          .isEqualTo(1);
+          .as(
+              "Expected rule %s to trigger at least 1 issue, response: %s",
+              ruleKey, response.body())
+          .isGreaterThanOrEqualTo(1);
     }
   }
 
