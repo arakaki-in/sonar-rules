@@ -1,3 +1,6 @@
 target/*
 .agents/*
 src/test/resources/sample-python-project/.scannerwork/*
+results.tsv
+autosearch-hitl-results.tsv
+
