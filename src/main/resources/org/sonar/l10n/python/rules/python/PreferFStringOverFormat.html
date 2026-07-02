@@ -1,0 +1,15 @@
+<p>This rule checks for string formatting using <code>.format()</code> or the <code>%</code> operator.</p>
+<p>Python's formatted string literals (f-strings) are cleaner, more readable, and faster than older formatting methods (<code>.format()</code> or <code>%</code>), because they are evaluated at runtime rather than parsed dynamically.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+name = "Alice"
+greeting = "Hello, {}".format(name)  # Noncompliant
+greeting2 = "Hello, %s" % name  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+name = "Alice"
+greeting = f"Hello, {name}"  # Compliant
+</pre>

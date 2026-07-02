@@ -1,0 +1,14 @@
+<p>This rule detects the use of <code>map(lambda ...)</code> or <code>filter(lambda ...)</code>.</p>
+<p>Using <code>map</code> or <code>filter</code> with a <code>lambda</code> expression is often harder to read than a list comprehension or a generator expression. Furthermore, list comprehensions are typically faster because they avoid the function call overhead of the lambda for each element.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+squares = map(lambda x: x**2, numbers)  # Noncompliant
+evens = filter(lambda x: x % 2 == 0, numbers)  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+squares = [x**2 for x in numbers]  # Compliant
+evens = [x for x in numbers if x % 2 == 0]  # Compliant
+</pre>

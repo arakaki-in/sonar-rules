@@ -7,10 +7,10 @@ package com.arakakiin.sonar.python.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
-class ImmutableDataTransferCheckTest {
+class AvoidSyncIoInAsyncCheckTest {
   @Test
   void test() {
     PythonCheckVerifier.verify(
-        "src/test/resources/checks/ImmutableDataTransfer.py", new ImmutableDataTransferCheck());
+        "src/test/resources/checks/AvoidSyncIoInAsync.py", new AvoidSyncIoInAsyncCheck());
   }
 }

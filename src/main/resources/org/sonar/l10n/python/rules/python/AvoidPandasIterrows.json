@@ -1,5 +1,5 @@
 {
-  "title": "Avoid using try-except blocks for standard control flow",
+  "title": "Avoid pandas iterrows()",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -8,7 +8,6 @@
   },
   "tags": [
     "performance",
-    "reliability",
     "custom-python"
   ],
   "defaultSeverity": "Major"

@@ -1,5 +1,5 @@
 {
-  "title": "Enforce immutable data transfer across concurrency boundaries",
+  "title": "Avoid synchronous I/O in async functions",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -7,8 +7,8 @@
     "constantCost": "15min"
   },
   "tags": [
+    "performance",
     "concurrency",
-    "multi-threading",
     "custom-python"
   ],
   "defaultSeverity": "Major"

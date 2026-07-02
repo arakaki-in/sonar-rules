@@ -7,11 +7,10 @@ package com.arakakiin.sonar.python.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
-class AvoidTryExceptControlFlowCheckTest {
+class PreferFStringOverFormatCheckTest {
   @Test
   void test() {
     PythonCheckVerifier.verify(
-        "src/test/resources/checks/AvoidTryExceptControlFlow.py",
-        new AvoidTryExceptControlFlowCheck());
+        "src/test/resources/checks/PreferFStringOverFormat.py", new PreferFStringOverFormatCheck());
   }
 }

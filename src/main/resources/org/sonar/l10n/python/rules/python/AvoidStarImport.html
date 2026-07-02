@@ -1,0 +1,14 @@
+<p>This rule detects the use of wildcard imports (e.g. <code>from module import *</code>).</p>
+<p>Wildcard imports pollute the local namespace, make it difficult for static analysis tools to trace names, and can introduce silent bugs if imported modules change their exports. Explicitly import only the objects needed.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+from math import *  # Noncompliant
+print(sin(0))
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+from math import sin  # Compliant
+print(sin(0))
+</pre>

@@ -1,0 +1,14 @@
+<p>This rule detects the use of pandas <code>iterrows()</code>.</p>
+<p><code>iterrows()</code> is extremely slow because it has to create a pandas Series for each row. Vectorized operations, <code>itertuples()</code>, or <code>apply()</code> should be preferred instead.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+for index, row in df.iterrows():  # Noncompliant
+    print(row['column'])
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+for row in df.itertuples():  # Compliant
+    print(row.column)
+</pre>

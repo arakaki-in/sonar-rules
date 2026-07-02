@@ -1,0 +1,14 @@
+{
+  "title": "Avoid dict.keys() for membership checks",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "custom-python"
+  ],
+  "defaultSeverity": "Minor"
+}

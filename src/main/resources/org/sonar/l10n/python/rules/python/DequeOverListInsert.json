@@ -1,5 +1,5 @@
 {
-  "title": "Use __slots__ for high-volume objects",
+  "title": "Use collections.deque instead of list for FIFO queue operations",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -8,7 +8,6 @@
   },
   "tags": [
     "performance",
-    "memory",
     "custom-python"
   ],
   "defaultSeverity": "Major"

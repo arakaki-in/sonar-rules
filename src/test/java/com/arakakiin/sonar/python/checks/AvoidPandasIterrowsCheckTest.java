@@ -7,9 +7,10 @@ package com.arakakiin.sonar.python.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
-class UseSlotsCheckTest {
+class AvoidPandasIterrowsCheckTest {
   @Test
   void test() {
-    PythonCheckVerifier.verify("src/test/resources/checks/UseSlots.py", new UseSlotsCheck());
+    PythonCheckVerifier.verify(
+        "src/test/resources/checks/AvoidPandasIterrows.py", new AvoidPandasIterrowsCheck());
   }
 }

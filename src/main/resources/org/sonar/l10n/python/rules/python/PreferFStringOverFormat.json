@@ -1,0 +1,15 @@
+{
+  "title": "Prefer f-strings over .format() or % formatting",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "convention",
+    "performance",
+    "custom-python"
+  ],
+  "defaultSeverity": "Minor"
+}

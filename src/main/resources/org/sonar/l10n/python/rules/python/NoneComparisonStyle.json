@@ -1,13 +1,13 @@
 {
-  "title": "Avoid eager regex compilation",
-  "type": "BUG",
+  "title": "Use 'is None' or 'is not None' for comparisons with None",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "performance",
+    "convention",
     "custom-python"
   ],
   "defaultSeverity": "Minor"

@@ -1,0 +1,22 @@
+<p>This rule detects synchronous or blocking calls (like <code>time.sleep</code>, <code>open</code>, <code>requests.*</code>, or <code>urllib.request.*</code>) inside asynchronous functions (<code>async def</code>).</p>
+<p>Blocking the event loop in async Python code prevents other coroutines from running, which severely degrades performance. Use asynchronous alternatives instead (e.g., <code>aiofiles</code>, <code>aiohttp</code>, or <code>asyncio.sleep</code>).</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+async def fetch_data():
+    time.sleep(1)  # Noncompliant
+    with open("data.txt") as f:  # Noncompliant
+        pass
+    response = requests.get("https://example.com")  # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+async def fetch_data():
+    await asyncio.sleep(1)  # Compliant
+    async with aiofiles.open("data.txt") as f:  # Compliant
+        pass
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://example.com") as response:  # Compliant
+            pass
+</pre>

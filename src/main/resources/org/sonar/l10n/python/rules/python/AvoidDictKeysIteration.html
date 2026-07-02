@@ -1,0 +1,14 @@
+<p>This rule detects membership checks like <code>key in dict.keys()</code>.</p>
+<p>Checking membership against <code>dict.keys()</code> creates unnecessary function call overhead. Checking membership directly in the dictionary <code>key in dict</code> is cleaner, faster, and operates in O(1) time.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if "key" in my_dict.keys():  # Noncompliant
+    print("Found")
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if "key" in my_dict:  # Compliant
+    print("Found")
+</pre>

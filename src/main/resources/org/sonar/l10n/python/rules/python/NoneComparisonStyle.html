@@ -1,0 +1,18 @@
+<p>This rule checks for comparisons with <code>None</code> using <code>==</code> or <code>!=</code>.</p>
+<p>According to PEP 8, comparisons to singletons like <code>None</code> should always be done with <code>is</code> or <code>is not</code>, never the equality operators. Equality operators can be customized by classes (via <code>__eq__</code>), which might lead to unexpected behavior or performance issues.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if val == None:  # Noncompliant
+    pass
+if val != None:  # Noncompliant
+    pass
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if val is None:  # Compliant
+    pass
+if val is not None:  # Compliant
+    pass
+</pre>

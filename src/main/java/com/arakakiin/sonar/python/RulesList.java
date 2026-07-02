@@ -4,22 +4,7 @@
  */
 package com.arakakiin.sonar.python;
 
-import com.arakakiin.sonar.python.checks.AvoidEagerRegexCompilationCheck;
-import com.arakakiin.sonar.python.checks.AvoidFileOpenWithoutWithCheck;
-import com.arakakiin.sonar.python.checks.AvoidSelectStarCheck;
-import com.arakakiin.sonar.python.checks.AvoidTryExceptControlFlowCheck;
-import com.arakakiin.sonar.python.checks.BatchOperationsRequiredCheck;
-import com.arakakiin.sonar.python.checks.DbLevelAggregationCheck;
-import com.arakakiin.sonar.python.checks.EfficientStringConcatenationCheck;
-import com.arakakiin.sonar.python.checks.EnforceConnectionPoolingCheck;
-import com.arakakiin.sonar.python.checks.FastJsonParsingCheck;
-import com.arakakiin.sonar.python.checks.GeneratorsOverListsCheck;
-import com.arakakiin.sonar.python.checks.ImmutableDataTransferCheck;
-import com.arakakiin.sonar.python.checks.MandatoryTimeoutsCheck;
-import com.arakakiin.sonar.python.checks.NoGlobalMutableStateCheck;
-import com.arakakiin.sonar.python.checks.ThreadLocalUsageCheck;
-import com.arakakiin.sonar.python.checks.UseSlotsCheck;
-import com.arakakiin.sonar.python.checks.ZeroNPlusOneQueriesCheck;
+import com.arakakiin.sonar.python.checks.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -41,19 +26,22 @@ public final class RulesList {
             AvoidFileOpenWithoutWithCheck.class,
             NoGlobalMutableStateCheck.class,
             ThreadLocalUsageCheck.class,
-            ImmutableDataTransferCheck.class,
             EnforceConnectionPoolingCheck.class,
             MandatoryTimeoutsCheck.class,
             ZeroNPlusOneQueriesCheck.class,
             AvoidSelectStarCheck.class,
             BatchOperationsRequiredCheck.class,
             DbLevelAggregationCheck.class,
-            AvoidEagerRegexCompilationCheck.class,
             GeneratorsOverListsCheck.class,
             EfficientStringConcatenationCheck.class,
-            UseSlotsCheck.class,
-            FastJsonParsingCheck.class,
-            AvoidTryExceptControlFlowCheck.class));
+            AvoidSyncIoInAsyncCheck.class,
+            AvoidPandasIterrowsCheck.class,
+            AvoidDictKeysIterationCheck.class,
+            DequeOverListInsertCheck.class,
+            NoneComparisonStyleCheck.class,
+            AvoidStarImportCheck.class,
+            PreferFStringOverFormatCheck.class,
+            AvoidMapLambdaCheck.class));
   }
 
   /** These rules are going to target TEST code only */

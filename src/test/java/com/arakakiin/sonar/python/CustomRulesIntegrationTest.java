@@ -38,19 +38,22 @@ class CustomRulesIntegrationTest {
           "arakakiin-rules:AvoidFileOpenWithoutWith",
           "arakakiin-rules:NoGlobalMutableState",
           "arakakiin-rules:ThreadLocalUsage",
-          "arakakiin-rules:ImmutableDataTransfer",
           "arakakiin-rules:EnforceConnectionPooling",
           "arakakiin-rules:MandatoryTimeouts",
           "arakakiin-rules:ZeroNPlusOneQueries",
           "arakakiin-rules:AvoidSelectStar",
           "arakakiin-rules:BatchOperationsRequired",
           "arakakiin-rules:DbLevelAggregation",
-          "arakakiin-rules:AvoidEagerRegexCompilation",
           "arakakiin-rules:GeneratorsOverLists",
           "arakakiin-rules:EfficientStringConcatenation",
-          "arakakiin-rules:UseSlots",
-          "arakakiin-rules:FastJsonParsing",
-          "arakakiin-rules:AvoidTryExceptControlFlow");
+          "arakakiin-rules:AvoidSyncIoInAsync",
+          "arakakiin-rules:AvoidPandasIterrows",
+          "arakakiin-rules:AvoidDictKeysIteration",
+          "arakakiin-rules:DequeOverListInsert",
+          "arakakiin-rules:NoneComparisonStyle",
+          "arakakiin-rules:AvoidStarImport",
+          "arakakiin-rules:PreferFStringOverFormat",
+          "arakakiin-rules:AvoidMapLambda");
 
   @RegisterExtension
   static final OrchestratorExtension ORCHESTRATOR =

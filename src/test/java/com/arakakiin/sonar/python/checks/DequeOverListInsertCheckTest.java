@@ -7,11 +7,10 @@ package com.arakakiin.sonar.python.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
-class AvoidEagerRegexCompilationCheckTest {
+class DequeOverListInsertCheckTest {
   @Test
   void test() {
     PythonCheckVerifier.verify(
-        "src/test/resources/checks/AvoidEagerRegexCompilation.py",
-        new AvoidEagerRegexCompilationCheck());
+        "src/test/resources/checks/DequeOverListInsert.py", new DequeOverListInsertCheck());
   }
 }
