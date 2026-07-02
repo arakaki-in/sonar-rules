@@ -56,5 +56,5 @@ jobs:
         with:
           name: jacoco-report-jdk${{ inputs.java-version }}
           path: target/site/jacoco/jacoco.xml
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7
