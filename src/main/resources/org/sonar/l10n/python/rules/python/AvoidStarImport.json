@@ -1,0 +1,14 @@
+{
+  "title": "Avoid wildcard imports",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "design",
+    "custom-python"
+  ],
+  "defaultSeverity": "Minor"
+}

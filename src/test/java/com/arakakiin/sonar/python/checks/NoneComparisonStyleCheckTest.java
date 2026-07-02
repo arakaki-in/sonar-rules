@@ -7,10 +7,10 @@ package com.arakakiin.sonar.python.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
-class FastJsonParsingCheckTest {
+class NoneComparisonStyleCheckTest {
   @Test
   void test() {
     PythonCheckVerifier.verify(
-        "src/test/resources/checks/FastJsonParsing.py", new FastJsonParsingCheck());
+        "src/test/resources/checks/NoneComparisonStyle.py", new NoneComparisonStyleCheck());
   }
 }

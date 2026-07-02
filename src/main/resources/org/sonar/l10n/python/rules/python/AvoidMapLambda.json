@@ -1,13 +1,13 @@
 {
-  "title": "Use fast JSON library for parsing and serialization",
-  "type": "BUG",
+  "title": "Avoid map() and filter() with lambda expressions",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "performance",
+    "convention",
     "custom-python"
   ],
   "defaultSeverity": "Minor"
