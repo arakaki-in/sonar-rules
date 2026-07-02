@@ -45,17 +45,13 @@ jobs:
 
       - name: Verify Java code formatting
         run: mvn spotless:check -B
-
       - name: Run unit tests
         run: mvn clean test -B
-
       - name: Run integration tests
         run: mvn verify -Pintegration-tests -B
-
       - name: Run security audit
         if: inputs.run-security-audit
         run: mvn verify -Psecurity-audit -DskipTests -B
-
       - name: Archive JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4
