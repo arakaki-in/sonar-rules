@@ -6,9 +6,16 @@ def test_compliant():
     result2 = dict(a=1, b=2)
     result3 = set(items)
     result4 = tuple(x for x in items)
+    assert result is not None
+    assert result2 is not None
+    assert result3 is not None
+    assert result4 is not None
 
 # Non-compliant cases
 def test_noncompliant():
     result = set([x for x in items])  # Noncompliant {{Use a set comprehension ('{...}') or dict comprehension ('{k: v ...}') instead of passing a list comprehension to 'set()' or 'dict()'. This avoids creating an unnecessary intermediate list.}}
     result2 = dict([(k, v) for k, v in items])  # Noncompliant
     result3 = tuple([x for x in items])  # Noncompliant
+    assert result is not None
+    assert result2 is not None
+    assert result3 is not None

@@ -1,4 +1,5 @@
 items = [1, 2, 3]
+a, b = [1], [2]
 
 # Compliant cases
 def test_compliant():
@@ -6,10 +7,12 @@ def test_compliant():
     for item in items:
         result.append(item)
 
-    total = a + b  # not in a loop
+    _ = a + b  # not in a loop — not flagged
 
     for item in items:
         result.extend([item])
+
+    assert result
 
 # Non-compliant cases
 def test_noncompliant():
@@ -19,3 +22,5 @@ def test_noncompliant():
 
     for item in items:
         result += [item]  # Noncompliant
+
+    assert result

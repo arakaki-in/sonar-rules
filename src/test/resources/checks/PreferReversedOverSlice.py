@@ -5,10 +5,12 @@ def test_compliant():
         process(item)
 
     r = list(reversed(seq))
+    assert r
 
     # slice with non-reverse step is fine
     for item in seq[::2]:
         process(item)
+
 
 # Non-compliant cases
 def test_noncompliant():
@@ -16,3 +18,4 @@ def test_noncompliant():
         process(item)
 
     copy = seq[::-1]  # Noncompliant
+    assert copy

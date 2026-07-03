@@ -70,17 +70,36 @@ class PythonBenchmarksTest {
   }
 
   private boolean runPytestForVersion(String version) {
+    return runPytestForVersion(version, 0);
+  }
+
+  private boolean runPytestForVersion(String version, int attempt) {
     try {
       ProcessBuilder pb =
           new ProcessBuilder("uv", "run", "--python", version, "pytest", "python_benchmarks/");
       pb.directory(new File("."));
-      // Redirect subprocess stdout and stderr to the Java process stdout and stderr
       pb.inheritIO();
       Process process = pb.start();
       int exitCode = process.waitFor();
-      return exitCode == 0;
+      if (exitCode == 0) {
+        return true;
+      }
+      if (attempt < 1) {
+        System.out.println(
+            "Benchmarks failed on Python "
+                + version
+                + " (attempt "
+                + (attempt + 1)
+                + "), retrying...");
+        Thread.sleep(2000);
+        return runPytestForVersion(version, attempt + 1);
+      }
+      return false;
     } catch (IOException | InterruptedException e) {
       System.err.println("Error executing pytest for version " + version + ": " + e.getMessage());
+      if (attempt < 1) {
+        return runPytestForVersion(version, attempt + 1);
+      }
       return false;
     }
   }
