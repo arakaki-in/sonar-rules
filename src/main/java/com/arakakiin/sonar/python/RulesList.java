@@ -45,7 +45,8 @@ public final class RulesList {
             PreferSetMembershipCheck.class,
             AvoidRangeLenIterationCheck.class,
             PreferIsinstanceOverTypeEqualityCheck.class,
-            PreferDirectTruthinessCheck.class));
+            PreferDirectTruthinessCheck.class,
+            PreferSetComprehensionCheck.class));
   }
 
   /** These rules are going to target TEST code only */
