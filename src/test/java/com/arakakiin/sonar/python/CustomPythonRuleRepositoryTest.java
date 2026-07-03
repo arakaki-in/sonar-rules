@@ -31,7 +31,7 @@ class CustomPythonRuleRepositoryTest {
         .extracting("key")
         .containsExactly(customPythonRuleRepository.repositoryKey());
     var rules = context.repositories().get(0).rules();
-    assertThat(rules).hasSize(24);
-    assertThat(customPythonRuleRepository.checkClasses()).hasSize(24);
+    assertThat(rules).hasSize(25);
+    assertThat(customPythonRuleRepository.checkClasses()).hasSize(25);
   }
 }

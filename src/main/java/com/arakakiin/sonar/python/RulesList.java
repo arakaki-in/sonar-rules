@@ -46,7 +46,8 @@ public final class RulesList {
             AvoidRangeLenIterationCheck.class,
             PreferIsinstanceOverTypeEqualityCheck.class,
             PreferDirectTruthinessCheck.class,
-            PreferSetComprehensionCheck.class));
+            PreferSetComprehensionCheck.class,
+            PreferReversedOverSliceCheck.class));
   }
 
   /** These rules are going to target TEST code only */
