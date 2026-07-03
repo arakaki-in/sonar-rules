@@ -6,10 +6,8 @@ package com.arakakiin.sonar.python.checks;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
@@ -63,15 +61,7 @@ class PythonBenchmarksTest {
       ProcessBuilder pb =
           new ProcessBuilder("uv", "run", "--python", version, "python", "--version");
       pb.directory(new File("."));
-      pb.redirectErrorStream(true);
       Process process = pb.start();
-      // Consume output to prevent pipe buffer deadlock
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        while (reader.readLine() != null) {
-          // drain output
-        }
-      }
       int exitCode = process.waitFor();
       return exitCode == 0;
     } catch (IOException | InterruptedException e) {
@@ -84,18 +74,9 @@ class PythonBenchmarksTest {
       ProcessBuilder pb =
           new ProcessBuilder("uv", "run", "--python", version, "pytest", "python_benchmarks/");
       pb.directory(new File("."));
-      // Redirect stderr to stdout and capture output through Java's IO layer.
-      // Using inheritIO() corrupts the Surefire forked JVM channel, which prevents
-      // the JaCoCo agent shutdown hook from writing jacoco.exec to disk.
-      pb.redirectErrorStream(true);
+      // Redirect subprocess stdout and stderr to the Java process stdout and stderr
+      pb.inheritIO();
       Process process = pb.start();
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          System.out.println(line);
-        }
-      }
       int exitCode = process.waitFor();
       return exitCode == 0;
     } catch (IOException | InterruptedException e) {
