@@ -42,7 +42,8 @@ public final class RulesList {
             AvoidStarImportCheck.class,
             PreferFStringOverFormatCheck.class,
             AvoidMapLambdaCheck.class,
-            PreferSetMembershipCheck.class));
+            PreferSetMembershipCheck.class,
+            AvoidRangeLenIterationCheck.class));
   }
 
   /** These rules are going to target TEST code only */
