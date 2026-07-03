@@ -1,6 +1,15 @@
 <p>This rule detects synchronous or blocking calls (like <code>time.sleep</code>, <code>open</code>, <code>requests.*</code>, or <code>urllib.request.*</code>) inside asynchronous functions (<code>async def</code>).</p>
 <p>Blocking the event loop in async Python code prevents other coroutines from running, which severely degrades performance. Use asynchronous alternatives instead (e.g., <code>aiofiles</code>, <code>aiohttp</code>, or <code>asyncio.sleep</code>).</p>
 
+<h2>Performance & Upgrade Recommendations</h2>
+<ul>
+  <li><strong>Do not starve the Event Loop:</strong> In Python async code, all coroutines run on a single thread. Calling synchronous blocking IO (like <code>requests.get()</code>) blocks the entire event loop, freezing all other concurrent operations.</li>
+  <li><strong>Use Async Clients:</strong> Replace <code>requests</code> or <code>urllib.request</code> with <code>httpx.AsyncClient()</code> or <code>aiohttp.ClientSession()</code>. Make sure to use connection pooling correctly inside async contexts.</li>
+  <li><strong>Use Non-blocking File operations:</strong> Use <code>aiofiles</code> instead of the standard <code>open()</code> function to write/read files asynchronously.</li>
+  <li><strong>Replace sleeps:</strong> Replace <code>time.sleep()</code> with <code>await asyncio.sleep()</code> to yield control back to the event loop.</li>
+  <li><strong>CPython 3.11+ Asyncio Improvements:</strong> Upgrading to Python 3.11+ introduces <code>asyncio.TaskGroup</code> (PEP 654) for safer and faster concurrent task management, and reduces asyncio runtime overhead (e.g. 2-6x faster task creation).</li>
+</ul>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
 async def fetch_data():

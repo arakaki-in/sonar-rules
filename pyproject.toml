@@ -1,0 +1,22 @@
+[project]
+name = "sonar-rules-python-benchmarks"
+version = "0.1.0"
+description = "Benchmarks and tests for Sonar custom Python rules"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "fastapi==0.111.0",
+    "pytest==8.2.2",
+    "pytest-asyncio==0.23.7",
+    "pytest-benchmark==4.0.0",
+    "httpx==0.27.0",
+    "aiohttp==3.9.5",
+    "sqlalchemy==2.0.31",
+    "pandas==2.2.2",
+    "numpy==1.26.4",
+    "requests==2.32.3",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["python_benchmarks"]

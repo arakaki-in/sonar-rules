@@ -48,8 +48,10 @@
     <maven.compiler.release>21</maven.compiler.release>
 
     <!-- SonarQube API & Plugin Versions -->
+    <sonar.api.groupId>org.sonarsource.api.plugin</sonar.api.groupId>
     <sonar.api.version>13.0.0.3026</sonar.api.version>
     <sonar.version>26.2.0.119303</sonar.version>
+    <sonar.python.artifact>python-commons</sonar.python.artifact>
     <sonar.python.version>5.23.0.33560</sonar.python.version>
     <sonar-analyzer-commons.version>2.24.0.4903</sonar-analyzer-commons.version>
     <pluginApiMinVersion>9.9</pluginApiMinVersion>
@@ -74,14 +76,14 @@
   <dependencies>
     <!-- Provided Scope (SonarQube APIs & Extensions) -->
     <dependency>
-      <groupId>org.sonarsource.api.plugin</groupId>
+      <groupId>${sonar.api.groupId}</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <version>${sonar.api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.python</groupId>
-      <artifactId>python-commons</artifactId>
+      <artifactId>${sonar.python.artifact}</artifactId>
       <version>${sonar.python.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -220,7 +222,7 @@
           <version>${maven-surefire-plugin.version}</version>
           <configuration>
             <reuseForks>true</reuseForks>
-            <argLine>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+            <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
             <excludes>
               <exclude>**/*IntegrationTest.java</exclude>
               <exclude>**/*IT.java</exclude>
@@ -242,7 +244,7 @@
             </execution>
           </executions>
           <configuration>
-            <argLine>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+            <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
             <includes>
               <include>**/*IntegrationTest.java</include>
               <include>**/*IT.java</include>

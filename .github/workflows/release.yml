@@ -6,51 +6,32 @@ on:
       - main
     tags:
       - 'v*'
-  pull_request:
 
 permissions:
   contents: write
   packages: write
 
 jobs:
-  build:
-    name: Build and Test (JDK ${{ matrix.java-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: [21, 23]
+  build-jdk21:
+    name: Build and Test (JDK 21)
+    uses: ./.github/workflows/_build.yml
+    with:
+      java-version: '21'
+      run-benchmarks: true
+      run-security-audit: true
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ matrix.java-version }}
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Verify Java code formatting
-        run: mvn spotless:check -B
-
-      - name: Run unit tests
-        run: mvn clean test -B
-
-      - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: target/site/jacoco/jacoco.xml
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+  build-jdk23:
+    name: Build and Test (JDK 23)
+    uses: ./.github/workflows/_build.yml
+    with:
+      java-version: '23'
+      run-benchmarks: false
+      run-security-audit: false
 
   publish:
     name: Publish Release
-    needs: build
+    needs: [build-jdk21, build-jdk23]
     runs-on: ubuntu-latest
-    if: >
-      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]'))
 
     steps:
       - name: Checkout Code
@@ -65,7 +46,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Determine if we need to bump version
+      - name: Determine if version bump is needed
         id: check_bump
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
@@ -85,11 +66,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           git add pom.xml
           git commit -m "chore(release): bump version to ${{ steps.bump.outputs.new_version }} [skip ci]"
           git tag "v${{ steps.bump.outputs.new_version }}"
-          
+
           git push origin main
           git push origin "v${{ steps.bump.outputs.new_version }}"
 
@@ -113,7 +94,9 @@ jobs:
 
       - name: Sign JAR
         run: |
-          gpg --batch --yes --pinentry-mode loopback --passphrase "${{ secrets.PASSPHRASE }}" --detach-sign -a target/arakakiin-rules-plugin-*.jar
+          gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "${{ secrets.PASSPHRASE }}" \
+            --detach-sign -a target/arakakiin-rules-plugin-*.jar
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

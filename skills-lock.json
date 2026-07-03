@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "autosearch-sustainability-reporter": {
+      "source": "EvertonSA/autosearch-sustainability-reporter",
+      "sourceType": "github",
+      "skillPath": "skills/autosearch-sustainability-reporter/SKILL.md",
+      "computedHash": "1caa9a6f1527dde61b97333ceaf9154dee3c77ead16979c03100a682ce87d52e"
+    },
     "fastapi-python": {
       "source": "mindrally/skills",
       "sourceType": "github",
@@ -35,7 +41,7 @@
       "source": "shipshitdev/library",
       "sourceType": "github",
       "skillPath": "skills/open-source-checker/SKILL.md",
-      "computedHash": "c49d29438206cd41a55ffbb6895b33ef47ed42535e4b0c108e1ce152406dc7bb"
+      "computedHash": "9f2c4406b856edba0c762460acd74935454ef328bab55f5eb7f8ff686f2c4aee"
     },
     "open-source-license": {
       "source": "skala-io/legal-skills",

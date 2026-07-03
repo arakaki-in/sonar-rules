@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build:
+    name: Build (JDK 21)
+    uses: ./.github/workflows/_build.yml
+    with:
+      java-version: '21'
+      run-benchmarks: true
+      run-security-audit: true
+
+  upload-coverage:
+    name: Upload Coverage to Codecov
+    needs: build
+    runs-on: ubuntu-latest
+    if: needs.build.result == 'success'
+    steps:
+      - name: Download JaCoCo report
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report-jdk21
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: jacoco.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
