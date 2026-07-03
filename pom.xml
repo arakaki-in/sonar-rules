@@ -222,7 +222,7 @@
           <version>${maven-surefire-plugin.version}</version>
           <configuration>
             <reuseForks>true</reuseForks>
-            <argLine>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+            <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
             <excludes>
               <exclude>**/*IntegrationTest.java</exclude>
               <exclude>**/*IT.java</exclude>
@@ -244,7 +244,7 @@
             </execution>
           </executions>
           <configuration>
-            <argLine>-XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+            <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
             <includes>
               <include>**/*IntegrationTest.java</include>
               <include>**/*IT.java</include>
