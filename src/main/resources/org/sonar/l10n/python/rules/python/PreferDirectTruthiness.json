@@ -1,0 +1,14 @@
+{
+  "title": "Use collection truthiness directly instead of comparing len() to zero",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "custom-python"
+  ],
+  "defaultSeverity": "Minor"
+}
