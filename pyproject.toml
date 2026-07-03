@@ -1,9 +1,9 @@
 [project]
 name = "sonar-rules-python-benchmarks"
 version = "0.1.0"
-description = "Benchmarks and tests for Sonar custom Python rules"
+description = "Benchmarks and tests for Sonar custom Python rules (benchmarks target Python 3.15)"
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.16"
 dependencies = [
     "fastapi==0.111.0",
     "pytest==8.2.2",

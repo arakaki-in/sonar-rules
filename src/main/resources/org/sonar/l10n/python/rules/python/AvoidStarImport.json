@@ -7,8 +7,8 @@
     "constantCost": "5min"
   },
   "tags": [
-    "design",
-    "custom-python"
+    "arakakiin-rules",
+    "design"
   ],
-  "defaultSeverity": "Minor"
+  "defaultSeverity": "Info"
 }

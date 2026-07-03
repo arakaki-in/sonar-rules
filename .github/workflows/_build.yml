@@ -38,10 +38,10 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install Python versions
+      - name: Install Python version
         if: inputs.run-benchmarks
         run: |
-          uv python install 3.10 3.11 3.12 3.13
+          uv python install 3.15
 
       - name: Verify Java code formatting
         run: mvn spotless:check -B

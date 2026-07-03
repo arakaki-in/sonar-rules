@@ -7,9 +7,9 @@
     "constantCost": "15min"
   },
   "tags": [
+    "arakakiin-rules",
     "concurrency",
-    "asyncio",
-    "custom-python"
+    "asyncio"
   ],
-  "defaultSeverity": "Major"
+  "defaultSeverity": "Minor"
 }

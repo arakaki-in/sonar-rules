@@ -7,9 +7,10 @@
     "constantCost": "5min"
   },
   "tags": [
+    "arakakiin-rules",
     "convention",
     "performance",
-    "custom-python"
+    "sustainability"
   ],
   "defaultSeverity": "Minor"
 }

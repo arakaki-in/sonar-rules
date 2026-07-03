@@ -54,6 +54,7 @@
     <sonar.python.artifact>python-commons</sonar.python.artifact>
     <sonar.python.version>5.23.0.33560</sonar.python.version>
     <sonar-analyzer-commons.version>2.24.0.4903</sonar-analyzer-commons.version>
+    <sonar.test.exclusions>src/test/resources/checks/**</sonar.test.exclusions>
     <pluginApiMinVersion>9.9</pluginApiMinVersion>
 
     <!-- Test & Integration Library Versions -->

@@ -24,7 +24,7 @@ These rules apply to any agent working on this SonarQube Custom Python Rules rep
 
 ## Custom Python Ruleset (arakakiin Engine)
 
-We enforce a strict 18-rule performance and safety ruleset. To prevent duplicate implementation work, we map these against native SonarQube Python analyzer rules:
+We enforce a strict 26-rule performance, safety, and sustainability ruleset. To prevent duplicate implementation work, we map a subset against native SonarQube Python analyzer rules:
 
 ### Natively Supported (Do Not Re-Implement)
 1. **Rule 1.2: No Mutable Default Arguments** (Natively covered by `python:S5712`)
@@ -44,4 +44,44 @@ Any future contribution, pull request, or task is only considered successfully c
 1. **Code Formatting (Spotless)**: Run `mvn spotless:check` to ensure the codebase strictly adheres to the configured Google Java Format style.
 2. **Test Coverage (JaCoCo)**: Run `mvn clean test` to ensure that all unit tests execute and pass sequentially, and the coverage report is successfully generated at `target/site/jacoco/jacoco.xml`.
 3. **Security Audit (OWASP Dependency Check)**: Ensure that dependency scans are executed and pass successfully to verify there are no known vulnerabilities.
+
+## Refactoring Workflow & Team Structure
+
+Major refactoring tasks follow a multi-agent team structure:
+
+- **Lead Agent** — Coordinates the effort, delegates work to specialized sub-agents, and integrates deliverables.
+- **Researcher** — Analyzes existing codebase, identifies patterns, and proposes design specifications (e.g., severity framework based on Green Software Foundation SCI spec, ecoCode/creedengo precedent).
+- **Config Engineer** — Updates build configuration files (`pom.xml`, CI/CD workflows, `PythonBenchmarksTest.java`).
+- **Java SDET** — Implements Java test and rule changes (check classes, test classes, JSON metadata, `RulesList` registration).
+- **Tech Writer** — Updates documentation files (`AGENTS.md`, `CLAUDE.md`, `README.md`) to reflect all changes.
+
+## Design Principles
+
+### CO2-Based Severity Framework
+
+Rule severities are assigned according to estimated carbon impact per occurrence, following the Green Software Foundation SCI specification (ISO 21031:2024) and precedents from ecoCode/creedengo:
+
+| Severity | Carbon Impact | Rules |
+|----------|---------------|-------|
+| BLOCKER | Very high, systemic | 0 |
+| CRITICAL | High, significant carbon savings | 7 |
+| MAJOR | Moderate, meaningful savings | 8 |
+| MINOR | Low, incremental improvement | 8 |
+| INFO | Negligible, best practice | 3 |
+
+Three rules were upgraded and six were downgraded during refactoring based on refined carbon impact analysis.
+
+### Multi-Version Testing Strategy
+
+All repository and plugin tests (`CustomPythonRuleRepositoryTest`, `CustomPythonRulesPluginTest`) use JUnit 5 `@ParameterizedTest` with a `@MethodSource` supplying three SonarQube versions:
+
+- **9.9** (minimum supported — 9.9 LTS)
+- **10.8** (intermediate — 10.x LTS)
+- **26.2** (build target — Community Build)
+
+This ensures compatibility across the supported SonarQube range without duplicating test methods.
+
+### Benchmark Strategy
+
+Python performance benchmarks run against a single Python version (3.15) via `uv run --python 3.15 pytest python_benchmarks/`. Benchmarks are invoked from `PythonBenchmarksTest.java` (tagged `@Tag("benchmark")`) and use retry logic for flaky `uv venv` creation. Previously, benchmarks ran across a matrix of Python 3.10–3.13; single-version execution reduces CI time while maintaining coverage of the primary target runtime.
 

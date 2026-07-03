@@ -35,25 +35,32 @@ class CustomRulesIntegrationTest {
 
   private static final List<String> RULE_KEYS =
       List.of(
+          "arakakiin-rules:AvoidDictKeysIteration",
           "arakakiin-rules:AvoidFileOpenWithoutWith",
-          "arakakiin-rules:NoGlobalMutableState",
-          "arakakiin-rules:ThreadLocalUsage",
-          "arakakiin-rules:EnforceConnectionPooling",
-          "arakakiin-rules:MandatoryTimeouts",
-          "arakakiin-rules:ZeroNPlusOneQueries",
+          "arakakiin-rules:AvoidListAdditionInLoop",
+          "arakakiin-rules:AvoidMapLambda",
+          "arakakiin-rules:AvoidPandasIterrows",
+          "arakakiin-rules:AvoidRangeLenIteration",
           "arakakiin-rules:AvoidSelectStar",
+          "arakakiin-rules:AvoidStarImport",
+          "arakakiin-rules:AvoidSyncIoInAsync",
           "arakakiin-rules:BatchOperationsRequired",
           "arakakiin-rules:DbLevelAggregation",
-          "arakakiin-rules:GeneratorsOverLists",
-          "arakakiin-rules:EfficientStringConcatenation",
-          "arakakiin-rules:AvoidSyncIoInAsync",
-          "arakakiin-rules:AvoidPandasIterrows",
-          "arakakiin-rules:AvoidDictKeysIteration",
           "arakakiin-rules:DequeOverListInsert",
+          "arakakiin-rules:EfficientStringConcatenation",
+          "arakakiin-rules:EnforceConnectionPooling",
+          "arakakiin-rules:GeneratorsOverLists",
+          "arakakiin-rules:MandatoryTimeouts",
+          "arakakiin-rules:NoGlobalMutableState",
           "arakakiin-rules:NoneComparisonStyle",
-          "arakakiin-rules:AvoidStarImport",
+          "arakakiin-rules:PreferDirectTruthiness",
           "arakakiin-rules:PreferFStringOverFormat",
-          "arakakiin-rules:AvoidMapLambda");
+          "arakakiin-rules:PreferIsinstanceOverTypeEquality",
+          "arakakiin-rules:PreferReversedOverSlice",
+          "arakakiin-rules:PreferSetComprehension",
+          "arakakiin-rules:PreferSetMembership",
+          "arakakiin-rules:ThreadLocalUsage",
+          "arakakiin-rules:ZeroNPlusOneQueries");
 
   @RegisterExtension
   static final OrchestratorExtension ORCHESTRATOR =
