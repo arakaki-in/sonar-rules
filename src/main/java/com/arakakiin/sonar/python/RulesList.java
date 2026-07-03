@@ -44,7 +44,8 @@ public final class RulesList {
             AvoidMapLambdaCheck.class,
             PreferSetMembershipCheck.class,
             AvoidRangeLenIterationCheck.class,
-            PreferIsinstanceOverTypeEqualityCheck.class));
+            PreferIsinstanceOverTypeEqualityCheck.class,
+            PreferDirectTruthinessCheck.class));
   }
 
   /** These rules are going to target TEST code only */
