@@ -43,7 +43,8 @@ public final class RulesList {
             PreferFStringOverFormatCheck.class,
             AvoidMapLambdaCheck.class,
             PreferSetMembershipCheck.class,
-            AvoidRangeLenIterationCheck.class));
+            AvoidRangeLenIterationCheck.class,
+            PreferIsinstanceOverTypeEqualityCheck.class));
   }
 
   /** These rules are going to target TEST code only */

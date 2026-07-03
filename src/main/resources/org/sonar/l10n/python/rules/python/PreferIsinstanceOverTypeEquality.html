@@ -1,0 +1,20 @@
+<p>This rule detects the use of <code>type(x) == SomeType</code> or <code>type(x) is SomeType</code> for type checking.</p>
+<p>Using <code>type()</code> for type comparison does not account for inheritance — it only matches the exact type, not subclasses. The built-in <code>isinstance()</code> function properly handles inheritance hierarchies and is the Pythonic way to perform type checks. It also supports checking against multiple types via a tuple of types.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if type(x) == int:  # Noncompliant
+    process(x)
+
+if type(x) is str:  # Noncompliant
+    process(x)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if isinstance(x, int):  # Compliant
+    process(x)
+
+if isinstance(x, str):  # Compliant
+    process(x)
+</pre>
