@@ -7,6 +7,12 @@
       "skillPath": "skills/autosearch-sustainability-reporter/SKILL.md",
       "computedHash": "1caa9a6f1527dde61b97333ceaf9154dee3c77ead16979c03100a682ce87d52e"
     },
+    "claude-api": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/claude-api/SKILL.md",
+      "computedHash": "adf50b5ad4d1a4a1026455c77311fe56051d41912d2b5f7fc987f14eb4dfd4ba"
+    },
     "fastapi-python": {
       "source": "mindrally/skills",
       "sourceType": "github",
