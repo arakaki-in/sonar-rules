@@ -1,0 +1,20 @@
+# Compliant cases
+def test_compliant():
+    items = {1, 2, 3, 4, 5}
+    for x in range(10):
+        if x in items:
+            pass
+
+# Non-compliant cases
+def test_noncompliant():
+    for x in range(10):
+        if x in [1, 2, 3, 4, 5]:  # Noncompliant {{Use a 'set' instead of a list or tuple for membership testing ('in') inside a loop. Lists and tuples have O(n) lookup; sets have O(1) average lookup.}}
+            pass
+
+    for x in range(10):
+        if x in (1, 2, 3):  # Noncompliant {{Use a 'set' instead of a list or tuple for membership testing ('in') inside a loop. Lists and tuples have O(n) lookup; sets have O(1) average lookup.}}
+            pass
+
+    for x in range(10):
+        if x in [v for v in range(100)]:  # Noncompliant {{Use a 'set' instead of a list or tuple for membership testing ('in') inside a loop. Lists and tuples have O(n) lookup; sets have O(1) average lookup.}}
+            pass

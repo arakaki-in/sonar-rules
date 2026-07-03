@@ -1,0 +1,18 @@
+<p>This rule detects the use of list or tuple literals (including list comprehensions) as the right-hand operand of <code>in</code> membership tests inside loops.</p>
+<p>When a list or tuple is used for membership testing, Python performs a linear O(n) scan. Inside a loop, this can lead to O(n*m) complexity. Converting the collection to a <code>set</code> gives O(1) average lookup time, dramatically improving performance for repeated membership tests.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+allowed = [1, 2, 3, 4, 5]
+for item in data:
+    if item in allowed:  # Noncompliant: O(n) lookup inside a loop
+        process(item)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+allowed = {1, 2, 3, 4, 5}
+for item in data:
+    if item in allowed:  # Compliant: O(1) lookup
+        process(item)
+</pre>

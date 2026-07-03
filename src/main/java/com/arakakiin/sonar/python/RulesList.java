@@ -41,7 +41,8 @@ public final class RulesList {
             NoneComparisonStyleCheck.class,
             AvoidStarImportCheck.class,
             PreferFStringOverFormatCheck.class,
-            AvoidMapLambdaCheck.class));
+            AvoidMapLambdaCheck.class,
+            PreferSetMembershipCheck.class));
   }
 
   /** These rules are going to target TEST code only */
