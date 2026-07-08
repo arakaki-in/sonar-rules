@@ -100,3 +100,17 @@ The bridge between Maven and Python: `PythonBenchmarksTest.java` (tagged `@Tag("
 2. Create the HTML description in `src/main/resources/org/sonar/l10n/python/rules/python/<RuleKey>.html`
 3. Register the class in `RulesList.getPythonChecks()` (or `getPythonTestChecks()` for test-only rules)
 4. Create a test class in `src/test/java/com/arakakiin/sonar/python/checks/` using `PythonCheckVerifier`
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues for arakaki-in/sonar-rules. PRs are not a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
