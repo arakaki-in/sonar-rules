@@ -6,3 +6,4 @@ autosearch-hitl-results.tsv
 
 __pycache__/
 *.pyc
+src/test/resources/checks/.scannerwork/report-task.txt
