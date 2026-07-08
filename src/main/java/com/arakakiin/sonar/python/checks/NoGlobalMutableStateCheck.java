@@ -77,10 +77,9 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
 
       String name = CallMatcher.getMethodName(call);
 
-      if (fqn != null) {
-        if ("contextvars.ContextVar".equals(fqn) || "logging.getLogger".equals(fqn)) {
-          return false;
-        }
+      if (fqn != null
+          && ("contextvars.ContextVar".equals(fqn) || "logging.getLogger".equals(fqn))) {
+        return false;
       }
       if (name != null) {
         if ("ContextVar".equals(name) || "getLogger".equals(name)) {
