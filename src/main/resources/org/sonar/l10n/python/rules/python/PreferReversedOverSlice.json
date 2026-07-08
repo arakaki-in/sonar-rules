@@ -1,0 +1,15 @@
+{
+  "title": "Use reversed() instead of [::-1] slice for reverse iteration",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "arakakiin-rules",
+    "performance",
+    "sustainability"
+  ],
+  "defaultSeverity": "Minor"
+}
