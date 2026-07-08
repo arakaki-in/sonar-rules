@@ -19,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -74,6 +75,7 @@ class CustomRulesIntegrationTest {
             .setProperty("sonar.token", token));
     waitForAnalysisProcessing(serverUrl, token);
 
+    List<String> zeroIssueRules = new ArrayList<>();
     for (String ruleKey : RULE_KEYS) {
       HttpResponse<String> response =
           get(
@@ -85,12 +87,14 @@ class CustomRulesIntegrationTest {
               bearer(token));
 
       assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-      assertThat(issueTotal(response.body()))
-          .as(
-              "Expected rule %s to trigger at least 1 issue, response: %s",
-              ruleKey, response.body())
-          .isGreaterThanOrEqualTo(1);
+      int total = issueTotal(response.body());
+      if (total == 0) {
+        zeroIssueRules.add(ruleKey);
+      }
     }
+    assertThat(zeroIssueRules)
+        .as("Expected all rules to trigger at least 1 issue, but the following had 0 issues")
+        .isEmpty();
   }
 
   private String generateAdminToken(String serverUrl) throws Exception {
