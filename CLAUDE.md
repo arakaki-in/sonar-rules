@@ -126,3 +126,18 @@ Repository and plugin tests (`CustomPythonRuleRepositoryTest`, `CustomPythonRule
    - `<RuleKey>_compliant.py` for compliant code (no `# Noncompliant` markers)
    - `<RuleKey>_noncompliant.py` for noncompliant code (with `# Noncompliant` markers)
 7. Create or update the JSON metadata file (`<RuleKey>.json`) in the same directory as the HTML description, matching the severity and tags (WHEN APPLICABLE, Add the `"sustainability"` tag)
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues for arakaki-in/sonar-rules. PRs are not a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
