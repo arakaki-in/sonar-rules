@@ -5,9 +5,10 @@ description = "Benchmarks and tests for Sonar custom Python rules (benchmarks ta
 readme = "README.md"
 requires-python = ">=3.15,<3.16"
 dependencies = [
-    "fastapi==0.111.0",
-    "pytest==8.2.2",
-    "pytest-asyncio==0.23.7",
+    "fastapi>=0.115.0",
+    "starlette>=0.40.0",
+    "pytest==9.0.3",
+    "pytest-asyncio==1.4.0",
     "pytest-benchmark==4.0.0",
     "httpx==0.27.0",
     "aiohttp==3.14.1",
