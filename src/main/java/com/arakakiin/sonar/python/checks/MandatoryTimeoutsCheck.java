@@ -82,6 +82,34 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
         }
       }
     }
+
+    // Check positional timeout for urlopen (3rd positional argument is timeout)
+    if (isUrlopenCall(callExpression)) {
+      int positionalCount = 0;
+      for (Argument argument : callExpression.arguments()) {
+        if (argument instanceof RegularArgument regArg) {
+          if (regArg.keywordArgument() == null) {
+            positionalCount++;
+            if (positionalCount == 3) {
+              return !TreeInspections.isNoneLiteral(regArg.expression());
+            }
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean isUrlopenCall(CallExpression callExpression) {
+    Symbol symbol = callExpression.calleeSymbol();
+    if (symbol != null && "urllib.request.urlopen".equals(symbol.fullyQualifiedName())) {
+      return true;
+    }
+    Expression callee = callExpression.callee();
+    if (callee.is(Tree.Kind.NAME) && "urlopen".equals(((Name) callee).name())) {
+      return true;
+    }
     return false;
   }
 }
