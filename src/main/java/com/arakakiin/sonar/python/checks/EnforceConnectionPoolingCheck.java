@@ -75,10 +75,8 @@ public class EnforceConnectionPoolingCheck extends PythonSubscriptionCheck {
 
   private static boolean isHttpRawCall(CallExpression callExpression) {
     String fqn = CallMatcher.getCalleeFqn(callExpression);
-    if (fqn != null) {
-      if (fqn.startsWith("requests.api.") || HTTP_RAW_CALLS.contains(fqn)) {
-        return true;
-      }
+    if (fqn != null && (fqn.startsWith("requests.api.") || HTTP_RAW_CALLS.contains(fqn))) {
+      return true;
     }
     if ("requests".equals(CallMatcher.getQualifierName(callExpression))) {
       String method = CallMatcher.getMethodName(callExpression);
