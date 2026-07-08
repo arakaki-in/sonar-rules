@@ -37,13 +37,6 @@ class MandatoryTimeoutsCheckTest {
     }
 
     @Test
-    @Disabled("False positive: positional timeout argument is not detected")
-    @DisplayName("urlopen with positional timeout should not be flagged")
-    void testPositionalTimeout() {
-      fail("Not yet implemented: see @Disabled annotation for details.");
-    }
-
-    @Test
     @Disabled("False negative: variable assigned to None bypasses check")
     @DisplayName("timeout=t where t=None should be flagged")
     void testVariableTimeoutNone() {

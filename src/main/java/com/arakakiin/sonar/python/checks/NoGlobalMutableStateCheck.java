@@ -24,6 +24,8 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
   public void initialize(Context context) {
     context.registerSyntaxNodeConsumer(Tree.Kind.GLOBAL_STMT, this::checkGlobalStatement);
     context.registerSyntaxNodeConsumer(Tree.Kind.ASSIGNMENT_STMT, this::checkAssignmentStatement);
+    context.registerSyntaxNodeConsumer(
+        Tree.Kind.ANNOTATED_ASSIGNMENT, this::checkAnnotatedAssignment);
   }
 
   private void checkGlobalStatement(SubscriptionContext ctx) {
@@ -40,11 +42,30 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
     }
   }
 
+  private void checkAnnotatedAssignment(SubscriptionContext ctx) {
+    AnnotatedAssignment assignment = (AnnotatedAssignment) ctx.syntaxNode();
+    if (TreeInspections.isAtModuleLevel(assignment)) {
+      Expression rhs = assignment.assignedValue();
+      if (rhs != null && isMutableExpression(rhs)) {
+        ctx.addIssue(assignment, MUTABLE_DECL_MESSAGE);
+      }
+    }
+  }
+
   private static boolean isMutableExpression(Expression expr) {
     if (expr.is(Tree.Kind.LIST_LITERAL)
         || expr.is(Tree.Kind.DICTIONARY_LITERAL)
         || expr.is(Tree.Kind.SET_LITERAL)) {
       return true;
+    }
+    if (expr.is(Tree.Kind.TUPLE)) {
+      Tuple tuple = (Tuple) expr;
+      for (Expression element : tuple.elements()) {
+        if (isMutableExpression(element)) {
+          return true;
+        }
+      }
+      return false;
     }
     if (expr.is(Tree.Kind.CALL_EXPR)) {
       CallExpression call = (CallExpression) expr;
@@ -55,6 +76,9 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
       Symbol symbol = call.calleeSymbol();
       if (symbol != null) {
         fqn = symbol.fullyQualifiedName();
+        if (symbol.is(Symbol.Kind.CLASS)) {
+          return true;
+        }
       }
 
       if (callee.is(Tree.Kind.NAME)) {

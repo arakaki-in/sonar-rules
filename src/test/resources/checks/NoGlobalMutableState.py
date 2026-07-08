@@ -44,9 +44,9 @@ def increment():
 # Edge cases / Gaps verification
 global_x = global_y = [] # Noncompliant {{Avoid declaring mutable global state at the module level. Use immutable structures or local/thread-safe scopes instead.}}
 
-# Gaps: The following are mutable global states but are NOT flagged by the rule
-annotated_list: list = []
-tuple_a, tuple_b = [], {}
+# Former gaps — now detected by the rule
+annotated_list: list = [] # Noncompliant {{Avoid declaring mutable global state at the module level. Use immutable structures or local/thread-safe scopes instead.}}
+tuple_a, tuple_b = [], {} # Noncompliant {{Avoid declaring mutable global state at the module level. Use immutable structures or local/thread-safe scopes instead.}}
 class my_class:
     pass
-global_inst = my_class()
+global_inst = my_class() # Noncompliant {{Avoid declaring mutable global state at the module level. Use immutable structures or local/thread-safe scopes instead.}}

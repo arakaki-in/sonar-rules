@@ -14,6 +14,7 @@ session = requests.Session()
 requests.get("https://example.com", timeout=5)
 session.post("https://example.com/api", data={}, timeout=10)
 urlopen("https://example.com", timeout=3.0)
+urlopen("https://example.com", None, 5.0)  # positional timeout (3rd argument)
 
 # Non-compliant cases
 requests.get("https://example.com") # Noncompliant {{Configure an explicit timeout for all network requests to avoid hanging indefinitely.}}
@@ -23,13 +24,10 @@ urlopen("https://example.com") # Noncompliant {{Configure an explicit timeout fo
 
 # Edge cases / Gaps verification
 
-# False Positive: Using **kwargs is flagged as missing timeout
+# False Positive: Using **kwargs is flagged as missing timeout (still a gap — needs flow analysis)
 kwargs = {"timeout": 5}
 requests.get("https://example.com", **kwargs) # Noncompliant {{Configure an explicit timeout for all network requests to avoid hanging indefinitely.}}
 
-# False Positive: Positional timeout argument is flagged as missing timeout
-urlopen("https://example.com", None, 5.0) # Noncompliant {{Configure an explicit timeout for all network requests to avoid hanging indefinitely.}}
-
-# False Negative / Gap: A variable assigned to None bypasses the timeout check
+# False Negative / Gap: A variable assigned to None bypasses the timeout check (still a gap — needs flow analysis)
 t = None
 requests.get("https://example.com", timeout=t)
