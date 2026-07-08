@@ -77,11 +77,7 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
         if (keyword != null && keyword.is(Tree.Kind.NAME)) {
           String argName = ((Name) keyword).name();
           if ("timeout".equals(argName)) {
-            Expression value = regArg.expression();
-            if (TreeInspections.isNoneLiteral(value)) {
-              return false; // timeout=None is invalid
-            }
-            return true;
+            return !TreeInspections.isNoneLiteral(regArg.expression());
           }
         }
       }

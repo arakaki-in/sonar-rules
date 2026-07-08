@@ -35,20 +35,14 @@ public class AvoidListAdditionInLoopCheck extends PythonSubscriptionCheck {
 
   private void checkCompoundAssign(SubscriptionContext ctx) {
     CompoundAssignmentStatement stmt = (CompoundAssignmentStatement) ctx.syntaxNode();
-    if (TreeInspections.isInsideLoop(stmt) && "+=".equals(stmt.compoundAssignmentToken().value())) {
-      if (stmt.rhsExpression() instanceof ListLiteral) {
-        ctx.addIssue(stmt, MESSAGE);
-      }
+    if (TreeInspections.isInsideLoop(stmt)
+        && "+=".equals(stmt.compoundAssignmentToken().value())
+        && stmt.rhsExpression() instanceof ListLiteral) {
+      ctx.addIssue(stmt, MESSAGE);
     }
   }
 
   private static boolean isListExpression(Expression expr) {
-    if (expr.is(Tree.Kind.LIST_LITERAL)) {
-      return true;
-    }
-    if (expr instanceof Name) {
-      return true;
-    }
-    return false;
+    return expr.is(Tree.Kind.LIST_LITERAL) || expr instanceof Name;
   }
 }

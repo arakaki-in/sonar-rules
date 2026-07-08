@@ -56,8 +56,8 @@ public class EfficientStringConcatenationCheck extends PythonSubscriptionCheck {
           String nameStr = name.name();
           Expression left = binExpr.leftOperand();
           Expression right = binExpr.rightOperand();
-          boolean leftMatch = (left instanceof Name && nameStr.equals(((Name) left).name()));
-          boolean rightMatch = (right instanceof Name && nameStr.equals(((Name) right).name()));
+          boolean leftMatch = left instanceof Name n && nameStr.equals(n.name());
+          boolean rightMatch = right instanceof Name n && nameStr.equals(n.name());
           if (leftMatch || rightMatch) {
             if (isStringExpression(name) || isStringExpression(left) || isStringExpression(right)) {
               ctx.addIssue(stmt, MESSAGE);

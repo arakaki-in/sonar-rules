@@ -28,20 +28,22 @@ public class AvoidRangeLenIterationCheck extends PythonSubscriptionCheck {
       return;
     }
     Expression iterable = forStmt.testExpressions().get(0);
-    if (iterable instanceof CallExpression call) {
-      Expression callee = call.callee();
-      if (callee instanceof Name name && "range".equals(name.name())) {
-        if (!call.arguments().isEmpty()
-            && call.arguments().get(0) instanceof RegularArgument regArg) {
-          Expression argExpr = regArg.expression();
-          if (argExpr instanceof CallExpression innerCall) {
-            Expression innerCallee = innerCall.callee();
-            if (innerCallee instanceof Name innerName && "len".equals(innerName.name())) {
-              ctx.addIssue(call, MESSAGE);
-            }
-          }
-        }
-      }
+    if (iterable instanceof CallExpression call && isRangeLenCall(call)) {
+      ctx.addIssue(call, MESSAGE);
     }
+  }
+
+  private static boolean isRangeLenCall(CallExpression call) {
+    if (!(call.callee() instanceof Name name) || !"range".equals(name.name())) {
+      return false;
+    }
+    if (call.arguments().isEmpty()
+        || !(call.arguments().get(0) instanceof RegularArgument regArg)) {
+      return false;
+    }
+    if (!(regArg.expression() instanceof CallExpression innerCall)) {
+      return false;
+    }
+    return innerCall.callee() instanceof Name innerName && "len".equals(innerName.name());
   }
 }

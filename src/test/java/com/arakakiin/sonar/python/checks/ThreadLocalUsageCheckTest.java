@@ -4,6 +4,8 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -30,6 +32,8 @@ class ThreadLocalUsageCheckTest {
     @Test
     @Disabled("Gap: threading.local subclass instantiation is not yet flagged")
     @DisplayName("subclass of threading.local should be flagged when instantiated")
-    void testThreadingLocalSubclass() {}
+    void testThreadingLocalSubclass() {
+      fail("Not yet implemented: see @Disabled annotation for details.");
+    }
   }
 }
