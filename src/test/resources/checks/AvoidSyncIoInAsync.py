@@ -1,3 +1,10 @@
+"""
+Avoid Sync I/O in Async
+=======================
+Blocking or synchronous calls inside an async function halt the event loop,
+preventing concurrent execution of other coroutines. Always use async equivalents.
+"""
+
 # Compliant
 def normal_func():
     time.sleep(1)

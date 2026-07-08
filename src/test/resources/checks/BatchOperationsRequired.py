@@ -1,3 +1,11 @@
+"""
+Batch Operations Required
+=========================
+Performing single-row database operations (like `session.add()` or `cursor.execute()`)
+inside a loop causes massive database roundtrip overhead. Use batch methods like
+`session.add_all()` or `cursor.executemany()` instead.
+"""
+
 # Compliant cases
 def add_users_compliant(session, users):
     session.add_all(users)

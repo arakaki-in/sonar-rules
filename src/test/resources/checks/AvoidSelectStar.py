@@ -1,3 +1,10 @@
+"""
+Avoid SELECT *
+==============
+Avoid using `SELECT *` in SQL queries. Always list the columns you need explicitly
+to reduce database load, minimize network I/O, and prevent schema-related issues.
+"""
+
 # Compliant cases
 query1 = "SELECT id, name FROM users"
 query2 = "select email from users where id = 1"

@@ -1,3 +1,10 @@
+"""
+Prefer Set Membership
+=====================
+Testing membership (`in`) inside a loop using lists or tuples takes O(N) linear time per search.
+Use a `set` for O(1) average constant-time lookup performance.
+"""
+
 # Compliant cases
 items = {1, 2, 3, 4, 5}
 for x in range(10):

@@ -1,3 +1,10 @@
+"""
+Prefer Set Comprehension
+========================
+Use a set comprehension (`{x for x in items}`) or dict comprehension instead of
+passing a list comprehension to `set()` or `dict()`. This avoids allocating a temporary
+intermediate list.
+"""
 items = [1, 2, 3]
 
 # Compliant cases

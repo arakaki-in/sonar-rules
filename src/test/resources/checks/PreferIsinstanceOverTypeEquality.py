@@ -1,3 +1,11 @@
+"""
+Prefer isinstance() Over Type Equality
+======================================
+Use `isinstance(x, SomeType)` instead of `type(x) == SomeType` or `type(x) is SomeType`.
+`isinstance()` is cleaner, supports checking subclass/inheritance relationships, and is the
+standard Pythonic approach for type validation.
+"""
+
 # Compliant cases
 if isinstance(x, int):
     process(x)

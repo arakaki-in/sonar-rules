@@ -1,3 +1,10 @@
+"""
+Mandatory Timeouts
+==================
+All network request methods (like `requests.get()` or `urlopen()`) should specify an
+explicit, reasonable timeout limit. Without a timeout, calls can hang indefinitely,
+blocking runtime resources.
+"""
 import requests
 from urllib.request import urlopen
 
@@ -26,4 +33,3 @@ urlopen("https://example.com", None, 5.0) # Noncompliant {{Configure an explicit
 # False Negative / Gap: A variable assigned to None bypasses the timeout check
 t = None
 requests.get("https://example.com", timeout=t)
-

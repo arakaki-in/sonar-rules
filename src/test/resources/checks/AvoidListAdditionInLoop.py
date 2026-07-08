@@ -1,3 +1,10 @@
+"""
+Avoid List Addition in Loop
+===========================
+Repeatedly appending to a list using `list = list + [item]` or `list += [item]` inside
+a loop creates a new list each time, resulting in O(N^2) time complexity.
+Instead, use `list.append(item)` or `list.extend([item])` which are O(1) amortized.
+"""
 items = [1, 2, 3]
 a, b = [1], [2]
 

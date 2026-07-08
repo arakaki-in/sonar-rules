@@ -1,3 +1,10 @@
+"""
+No Global Mutable State
+=======================
+Declaring mutable state (like list, dict, set, or custom objects) at the global/module
+level is unsafe in concurrent execution contexts and can cause race conditions.
+Use immutable data structures, function local variables, or context-scoped variable containers.
+"""
 import logging
 import contextvars
 
@@ -43,4 +50,3 @@ tuple_a, tuple_b = [], {}
 class my_class:
     pass
 global_inst = my_class()
-

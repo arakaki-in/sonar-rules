@@ -1,3 +1,11 @@
+"""
+Prefer Direct Truthiness
+========================
+In Python, empty collections (lists, tuples, dicts, strings) are falsy, while populated
+ones are truthy. Avoid checking length (`len(seq) > 0` or `len(seq) == 0`) and check
+the collection directly (e.g. `if seq:` or `if not seq:`).
+"""
+
 # Compliant cases
 items = [1, 2, 3]
 if items:

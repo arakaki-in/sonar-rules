@@ -1,3 +1,10 @@
+"""
+Avoid Star Import
+=================
+Wildcard imports (`from module import *`) pollute the global namespace, make debugging
+difficult, and can lead to silent name conflicts. Always import explicitly.
+"""
+
 # Compliant
 import math
 from math import sin, cos
