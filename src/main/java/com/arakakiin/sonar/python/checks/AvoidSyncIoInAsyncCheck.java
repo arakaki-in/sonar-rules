@@ -38,32 +38,17 @@ public class AvoidSyncIoInAsyncCheck extends PythonSubscriptionCheck {
 
     @Override
     public void visitCallExpression(CallExpression callExpression) {
-      Expression callee = callExpression.callee();
-      if (callee instanceof Name name) {
-        String nameStr = name.name();
-        if ("open".equals(nameStr)) {
-          ctx.addIssue(callExpression, MESSAGE);
-        }
-      } else if (callee instanceof QualifiedExpression qualifiedExpression) {
-        String fullName = getQualifiedName(qualifiedExpression);
-        if ("time.sleep".equals(fullName)
-            || "requests.get".equals(fullName)
-            || "requests.post".equals(fullName)
-            || "requests.put".equals(fullName)
-            || "requests.delete".equals(fullName)
-            || "requests.patch".equals(fullName)
-            || "requests.head".equals(fullName)
-            || "requests.options".equals(fullName)
-            || "requests.request".equals(fullName)
-            || fullName.startsWith("urllib.request.")) {
+      String fqn = CallMatcher.getCalleeFqn(callExpression);
+      if ("open".equals(fqn)) {
+        ctx.addIssue(callExpression, MESSAGE);
+      } else if (fqn != null) {
+        if ("time.sleep".equals(fqn)
+            || fqn.startsWith("requests.")
+            || fqn.startsWith("urllib.request.")) {
           ctx.addIssue(callExpression, MESSAGE);
         }
       }
       super.visitCallExpression(callExpression);
-    }
-
-    private String getQualifiedName(QualifiedExpression qualifiedExpression) {
-      return TreeInspections.resolveFullyQualifiedName(qualifiedExpression);
     }
   }
 }

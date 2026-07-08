@@ -34,26 +34,16 @@ public class BatchOperationsRequiredCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isBatchableDbOperation(CallExpression callExpression) {
-    Expression callee = callExpression.callee();
-    if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qualExpr = (QualifiedExpression) callee;
-      String methodName = qualExpr.name().name();
-      if ("add".equals(methodName) || "delete".equals(methodName)) {
-        Expression qualifier = qualExpr.qualifier();
-        if (qualifier.is(Tree.Kind.NAME)) {
-          String qualName = ((Name) qualifier).name();
-          return qualName.contains("session") || qualName.contains("db");
-        }
-        return false;
+    String methodName = CallMatcher.getMethodName(callExpression);
+    if ("add".equals(methodName) || "delete".equals(methodName)) {
+      String qualifier = CallMatcher.getQualifierName(callExpression);
+      if (qualifier != null) {
+        return qualifier.contains("session") || qualifier.contains("db");
       }
-      if ("execute".equals(methodName)) {
-        return hasBatchableSql(callExpression);
-      }
-    } else if (callee.is(Tree.Kind.NAME)) {
-      String name = ((Name) callee).name();
-      if ("execute".equals(name)) {
-        return hasBatchableSql(callExpression);
-      }
+      return false;
+    }
+    if ("execute".equals(methodName)) {
+      return hasBatchableSql(callExpression);
     }
     return false;
   }

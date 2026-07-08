@@ -69,26 +69,16 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
     }
     if (expr.is(Tree.Kind.CALL_EXPR)) {
       CallExpression call = (CallExpression) expr;
-      Expression callee = call.callee();
-
-      String name = null;
-      String fqn = null;
+      String fqn = CallMatcher.getCalleeFqn(call);
       Symbol symbol = call.calleeSymbol();
-      if (symbol != null) {
-        fqn = symbol.fullyQualifiedName();
-        if (symbol.is(Symbol.Kind.CLASS)) {
-          return true;
-        }
+      if (symbol != null && symbol.is(Symbol.Kind.CLASS)) {
+        return true;
       }
 
-      if (callee.is(Tree.Kind.NAME)) {
-        name = ((Name) callee).name();
-      } else if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-        name = ((QualifiedExpression) callee).name().name();
-      }
+      String name = CallMatcher.getMethodName(call);
 
       if (fqn != null) {
-        if (fqn.equals("contextvars.ContextVar") || fqn.equals("logging.getLogger")) {
+        if ("contextvars.ContextVar".equals(fqn) || "logging.getLogger".equals(fqn)) {
           return false;
         }
       }

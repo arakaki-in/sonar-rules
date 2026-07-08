@@ -7,11 +7,7 @@ package com.arakakiin.sonar.python.checks;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
-import org.sonar.plugins.python.api.symbols.Symbol;
 import org.sonar.plugins.python.api.tree.CallExpression;
-import org.sonar.plugins.python.api.tree.Expression;
-import org.sonar.plugins.python.api.tree.Name;
-import org.sonar.plugins.python.api.tree.QualifiedExpression;
 import org.sonar.plugins.python.api.tree.Tree;
 import org.sonar.plugins.python.api.tree.WithItem;
 
@@ -36,30 +32,15 @@ public class AvoidFileOpenWithoutWithCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isOpenCall(CallExpression callExpression) {
-    Expression callee = callExpression.callee();
-    if (callee.is(Tree.Kind.NAME)) {
-      Name name = (Name) callee;
-      if ("open".equals(name.name())) {
-        return true;
-      }
-    } else if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qualExpr = (QualifiedExpression) callee;
-      if ("open".equals(qualExpr.name().name())) {
-        Expression qualifier = qualExpr.qualifier();
-        if (qualifier.is(Tree.Kind.NAME) && "io".equals(((Name) qualifier).name())) {
-          return true;
-        }
-      }
+    String fqn = CallMatcher.getCalleeFqn(callExpression);
+    if ("open".equals(fqn) || "io.open".equals(fqn) || "builtins.open".equals(fqn)) {
+      return true;
     }
-
-    Symbol symbol = callExpression.calleeSymbol();
-    if (symbol != null) {
-      String fqn = symbol.fullyQualifiedName();
-      if ("open".equals(fqn) || "io.open".equals(fqn) || "builtins.open".equals(fqn)) {
-        return true;
-      }
+    String methodName = CallMatcher.getMethodName(callExpression);
+    if ("open".equals(methodName)) {
+      String qualifier = CallMatcher.getQualifierName(callExpression);
+      return qualifier == null || "io".equals(qualifier);
     }
-
     return false;
   }
 

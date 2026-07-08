@@ -9,7 +9,6 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
-import org.sonar.plugins.python.api.symbols.Symbol;
 import org.sonar.plugins.python.api.tree.*;
 
 @Rule(key = ThreadLocalUsageCheck.RULE_KEY)
@@ -52,40 +51,17 @@ public class ThreadLocalUsageCheck extends PythonSubscriptionCheck {
   }
 
   private boolean isThreadingLocalCall(CallExpression callExpression) {
-    Expression callee = callExpression.callee();
-
-    // Check direct name: local()
-    if (callee.is(Tree.Kind.NAME)) {
-      Name name = (Name) callee;
-      if ("local".equals(name.name())) {
-        Symbol symbol = callExpression.calleeSymbol();
-        if (symbol == null || "threading.local".equals(symbol.fullyQualifiedName())) {
-          return true;
-        }
-      }
-      // Check if callee is a known threading.local subclass
-      if (threadingLocalSubclasses.contains(name.name())) {
+    String fqn = CallMatcher.getCalleeFqn(callExpression);
+    if ("threading.local".equals(fqn)) {
+      return true;
+    }
+    String methodName = CallMatcher.getMethodName(callExpression);
+    if ("local".equals(methodName)) {
+      String qualifier = CallMatcher.getQualifierName(callExpression);
+      if (qualifier == null || "threading".equals(qualifier)) {
         return true;
       }
     }
-    // Check qualified: threading.local()
-    else if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qualExpr = (QualifiedExpression) callee;
-      if ("local".equals(qualExpr.name().name())) {
-        Expression qualifier = qualExpr.qualifier();
-        if (qualifier.is(Tree.Kind.NAME) && "threading".equals(((Name) qualifier).name())) {
-          return true;
-        }
-      }
-    }
-
-    Symbol symbol = callExpression.calleeSymbol();
-    if (symbol != null) {
-      String fqn = symbol.fullyQualifiedName();
-      if ("threading.local".equals(fqn)) {
-        return true;
-      }
-    }
-    return false;
+    return methodName != null && threadingLocalSubclasses.contains(methodName);
   }
 }

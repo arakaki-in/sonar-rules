@@ -8,7 +8,6 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.python.api.PythonSubscriptionCheck;
 import org.sonar.plugins.python.api.SubscriptionContext;
-import org.sonar.plugins.python.api.symbols.Symbol;
 import org.sonar.plugins.python.api.tree.*;
 
 @Rule(key = MandatoryTimeoutsCheck.RULE_KEY)
@@ -36,38 +35,25 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isHttpRequestCall(CallExpression callExpression) {
-    Symbol symbol = callExpression.calleeSymbol();
-    if (symbol != null) {
-      String fqn = symbol.fullyQualifiedName();
-      if (fqn != null) {
-        if (fqn.startsWith("requests.api.")
-            || fqn.startsWith("requests.sessions.Session.")
-            || "urllib.request.urlopen".equals(fqn)) {
-          return true;
-        }
-      }
-    }
-
-    Expression callee = callExpression.callee();
-    if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qualExpr = (QualifiedExpression) callee;
-      String methodName = qualExpr.name().name();
-      if (HTTP_METHODS.contains(methodName)) {
-        Expression qualifier = qualExpr.qualifier();
-        if (qualifier.is(Tree.Kind.NAME)) {
-          String qualName = ((Name) qualifier).name();
-          return "requests".equals(qualName)
-              || "session".equals(qualName)
-              || qualName.contains("client");
-        }
-      }
-    } else if (callee.is(Tree.Kind.NAME)) {
-      String name = ((Name) callee).name();
-      if ("urlopen".equals(name)) {
+    String fqn = CallMatcher.getCalleeFqn(callExpression);
+    if (fqn != null) {
+      if (fqn.startsWith("requests.api.")
+          || fqn.startsWith("requests.sessions.Session.")
+          || "urllib.request.urlopen".equals(fqn)) {
         return true;
       }
     }
-    return false;
+
+    String methodName = CallMatcher.getMethodName(callExpression);
+    if (methodName != null && HTTP_METHODS.contains(methodName)) {
+      String qualifier = CallMatcher.getQualifierName(callExpression);
+      if (qualifier != null) {
+        return "requests".equals(qualifier)
+            || "session".equals(qualifier)
+            || qualifier.contains("client");
+      }
+    }
+    return "urlopen".equals(methodName);
   }
 
   private static boolean hasTimeoutArgument(CallExpression callExpression) {
@@ -102,14 +88,10 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isUrlopenCall(CallExpression callExpression) {
-    Symbol symbol = callExpression.calleeSymbol();
-    if (symbol != null && "urllib.request.urlopen".equals(symbol.fullyQualifiedName())) {
+    String fqn = CallMatcher.getCalleeFqn(callExpression);
+    if (fqn != null && "urllib.request.urlopen".equals(fqn)) {
       return true;
     }
-    Expression callee = callExpression.callee();
-    if (callee.is(Tree.Kind.NAME) && "urlopen".equals(((Name) callee).name())) {
-      return true;
-    }
-    return false;
+    return "urlopen".equals(CallMatcher.getMethodName(callExpression));
   }
 }
