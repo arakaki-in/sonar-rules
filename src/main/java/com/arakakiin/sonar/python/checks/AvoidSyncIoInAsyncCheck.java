@@ -41,12 +41,11 @@ public class AvoidSyncIoInAsyncCheck extends PythonSubscriptionCheck {
       String fqn = CallMatcher.getCalleeFqn(callExpression);
       if ("open".equals(fqn)) {
         ctx.addIssue(callExpression, MESSAGE);
-      } else if (fqn != null) {
-        if ("time.sleep".equals(fqn)
-            || fqn.startsWith("requests.")
-            || fqn.startsWith("urllib.request.")) {
-          ctx.addIssue(callExpression, MESSAGE);
-        }
+      } else if (fqn != null
+          && ("time.sleep".equals(fqn)
+              || fqn.startsWith("requests.")
+              || fqn.startsWith("urllib.request."))) {
+        ctx.addIssue(callExpression, MESSAGE);
       }
       super.visitCallExpression(callExpression);
     }
