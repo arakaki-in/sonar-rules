@@ -34,11 +34,8 @@ public class PreferSetMembershipCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isListOrTupleLiteral(Expression expr) {
-    if (expr.is(Tree.Kind.LIST_LITERAL)
+    return expr.is(Tree.Kind.LIST_LITERAL)
         || expr.is(Tree.Kind.TUPLE)
-        || expr.is(Tree.Kind.LIST_COMPREHENSION)) {
-      return true;
-    }
-    return false;
+        || expr.is(Tree.Kind.LIST_COMPREHENSION);
   }
 }

@@ -4,6 +4,8 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -30,16 +32,22 @@ class MandatoryTimeoutsCheckTest {
     @Test
     @Disabled("False positive: **kwargs with timeout=5 is not detected")
     @DisplayName("**kwargs with timeout=5 should not be flagged")
-    void testKwargsTimeout() {}
+    void testKwargsTimeout() {
+      fail("Not yet implemented: see @Disabled annotation for details.");
+    }
 
     @Test
     @Disabled("False positive: positional timeout argument is not detected")
     @DisplayName("urlopen with positional timeout should not be flagged")
-    void testPositionalTimeout() {}
+    void testPositionalTimeout() {
+      fail("Not yet implemented: see @Disabled annotation for details.");
+    }
 
     @Test
     @Disabled("False negative: variable assigned to None bypasses check")
     @DisplayName("timeout=t where t=None should be flagged")
-    void testVariableTimeoutNone() {}
+    void testVariableTimeoutNone() {
+      fail("Not yet implemented: see @Disabled annotation for details.");
+    }
   }
 }

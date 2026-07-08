@@ -44,7 +44,10 @@ class PythonBenchmarksTest {
       Process process = pb.start();
       int exitCode = process.waitFor();
       return exitCode == 0;
-    } catch (IOException | InterruptedException e) {
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return false;
+    } catch (IOException e) {
       return false;
     }
   }
@@ -92,19 +95,33 @@ class PythonBenchmarksTest {
                 + "), retrying in "
                 + (sleepMs / 1000)
                 + "s...");
-        Thread.sleep(sleepMs);
+        delay(sleepMs);
         return runPytestForVersion(version, attempt + 1);
       }
 
       System.err.println(
           "Benchmarks failed after " + MAX_RETRIES + " attempts on Python " + version);
       return false;
-    } catch (IOException | InterruptedException e) {
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      System.err.println(
+          "Interrupted while running benchmarks for Python " + version + ": " + e.getMessage());
+      return false;
+    } catch (IOException e) {
       System.err.println("Error executing pytest for version " + version + ": " + e.getMessage());
       if (attempt < MAX_RETRIES - 1) {
         return runPytestForVersion(version, attempt + 1);
       }
       return false;
+    }
+  }
+
+  @SuppressWarnings("java:S2925")
+  private static void delay(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
   }
 }

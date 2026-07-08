@@ -30,13 +30,13 @@ public class PreferSetComprehensionCheck extends PythonSubscriptionCheck {
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression call = (CallExpression) ctx.syntaxNode();
     Expression callee = call.callee();
-    if (callee instanceof Name name && COMPREHENSION_CONSTRUCTORS.contains(name.name())) {
-      if (!call.arguments().isEmpty()
-          && call.arguments().get(0) instanceof RegularArgument regArg) {
-        Expression argExpr = regArg.expression();
-        if (argExpr.is(Tree.Kind.LIST_COMPREHENSION)) {
-          ctx.addIssue(call, MESSAGE);
-        }
+    if (callee instanceof Name name
+        && COMPREHENSION_CONSTRUCTORS.contains(name.name())
+        && !call.arguments().isEmpty()
+        && call.arguments().get(0) instanceof RegularArgument regArg) {
+      Expression argExpr = regArg.expression();
+      if (argExpr.is(Tree.Kind.LIST_COMPREHENSION)) {
+        ctx.addIssue(call, MESSAGE);
       }
     }
   }
