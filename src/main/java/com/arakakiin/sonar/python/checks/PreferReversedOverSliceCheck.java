@@ -33,14 +33,12 @@ public class PreferReversedOverSliceCheck extends PythonSubscriptionCheck {
       Expression lower = sliceItem.lowerBound();
       Expression upper = sliceItem.upperBound();
       Expression step = sliceItem.stride();
-      if (lower == null && upper == null && step != null) {
-        if (step instanceof UnaryExpression unary) {
-          String op = unary.operator().value();
-          if ("-".equals(op)
-              && unary.expression() instanceof NumericLiteral num
-              && "1".equals(num.valueAsString())) {
-            ctx.addIssue(slice, MESSAGE);
-          }
+      if (lower == null && upper == null && step instanceof UnaryExpression unary) {
+        String op = unary.operator().value();
+        if ("-".equals(op)
+            && unary.expression() instanceof NumericLiteral num
+            && "1".equals(num.valueAsString())) {
+          ctx.addIssue(slice, MESSAGE);
         }
       }
     }
