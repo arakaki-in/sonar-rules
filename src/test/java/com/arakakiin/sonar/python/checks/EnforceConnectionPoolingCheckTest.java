@@ -4,6 +4,8 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +34,8 @@ class EnforceConnectionPoolingCheckTest {
     @Disabled(
         "Gap closed: list comprehensions were previously a false negative but are now flagged")
     @DisplayName("list comprehension HTTP calls without session are now flagged (gap closed)")
-    void testListComprehensionHttpCalls() {}
+    void testListComprehensionHttpCalls() {
+      fail("Not yet implemented: see @Disabled annotation for details.");
+    }
   }
 }
