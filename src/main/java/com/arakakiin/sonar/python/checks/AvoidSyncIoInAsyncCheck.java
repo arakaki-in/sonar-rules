@@ -39,10 +39,9 @@ public class AvoidSyncIoInAsyncCheck extends PythonSubscriptionCheck {
     @Override
     public void visitCallExpression(CallExpression callExpression) {
       String fqn = CallMatcher.getCalleeFqn(callExpression);
-      if ("open".equals(fqn)) {
-        ctx.addIssue(callExpression, MESSAGE);
-      } else if (fqn != null
-          && ("time.sleep".equals(fqn)
+      if (fqn != null
+          && ("open".equals(fqn)
+              || "time.sleep".equals(fqn)
               || fqn.startsWith("requests.")
               || fqn.startsWith("urllib.request."))) {
         ctx.addIssue(callExpression, MESSAGE);
