@@ -32,23 +32,12 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
 
   private void checkAssignmentStatement(SubscriptionContext ctx) {
     AssignmentStatement assignment = (AssignmentStatement) ctx.syntaxNode();
-    if (isAtModuleLevel(assignment)) {
+    if (TreeInspections.isAtModuleLevel(assignment)) {
       Expression rhs = assignment.assignedValue();
       if (rhs != null && isMutableExpression(rhs)) {
         ctx.addIssue(assignment, MUTABLE_DECL_MESSAGE);
       }
     }
-  }
-
-  private static boolean isAtModuleLevel(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FUNCDEF) || parent.is(Tree.Kind.CLASSDEF)) {
-        return false;
-      }
-      parent = parent.parent();
-    }
-    return true;
   }
 
   private static boolean isMutableExpression(Expression expr) {

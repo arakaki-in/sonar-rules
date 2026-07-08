@@ -26,7 +26,7 @@ public class AvoidListAdditionInLoopCheck extends PythonSubscriptionCheck {
 
   private void checkAddition(SubscriptionContext ctx) {
     BinaryExpression expr = (BinaryExpression) ctx.syntaxNode();
-    if (isInsideLoop(expr)
+    if (TreeInspections.isInsideLoop(expr)
         && "+".equals(expr.operator().value())
         && (isListExpression(expr.leftOperand()) || isListExpression(expr.rightOperand()))) {
       ctx.addIssue(expr, MESSAGE);
@@ -35,7 +35,7 @@ public class AvoidListAdditionInLoopCheck extends PythonSubscriptionCheck {
 
   private void checkCompoundAssign(SubscriptionContext ctx) {
     CompoundAssignmentStatement stmt = (CompoundAssignmentStatement) ctx.syntaxNode();
-    if (isInsideLoop(stmt) && "+=".equals(stmt.compoundAssignmentToken().value())) {
+    if (TreeInspections.isInsideLoop(stmt) && "+=".equals(stmt.compoundAssignmentToken().value())) {
       if (stmt.rhsExpression() instanceof ListLiteral) {
         ctx.addIssue(stmt, MESSAGE);
       }
@@ -48,17 +48,6 @@ public class AvoidListAdditionInLoopCheck extends PythonSubscriptionCheck {
     }
     if (expr instanceof Name) {
       return true;
-    }
-    return false;
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT)) {
-        return true;
-      }
-      parent = parent.parent();
     }
     return false;
   }

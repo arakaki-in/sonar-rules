@@ -18,6 +18,6 @@ urls = ["http://api1.com", "http://api2.com"]
 for url in urls:
     requests.get(url) # Noncompliant {{Avoid making raw HTTP requests inside a loop. Reuse TCP connections by using a 'requests.Session()' instance instead.}}
 
-# Gaps: list comprehensions are NOT flagged by the rule
-responses = [requests.get(url) for url in urls]
+# Gap closed: list comprehensions are now flagged by the rule
+responses = [requests.get(url) for url in urls] # Noncompliant {{Avoid making raw HTTP requests inside a loop. Reuse TCP connections by using a 'requests.Session()' instance instead.}}
 

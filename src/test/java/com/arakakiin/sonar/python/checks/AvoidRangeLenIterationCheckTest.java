@@ -4,13 +4,21 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
+@DisplayName("AvoidRangeLenIterationCheck")
 class AvoidRangeLenIterationCheckTest {
-  @Test
-  void test() {
-    PythonCheckVerifier.verify(
-        "src/test/resources/checks/AvoidRangeLenIteration.py", new AvoidRangeLenIterationCheck());
+  @Nested
+  @DisplayName("All scenarios")
+  class Scenarios {
+    @Test
+    @DisplayName("flags range(len(...)) iteration pattern")
+    void test() {
+      PythonCheckVerifier.verify(
+          "src/test/resources/checks/AvoidRangeLenIteration.py", new AvoidRangeLenIterationCheck());
+    }
   }
 }

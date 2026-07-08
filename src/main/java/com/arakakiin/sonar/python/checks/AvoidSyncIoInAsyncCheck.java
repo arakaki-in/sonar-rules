@@ -63,18 +63,7 @@ public class AvoidSyncIoInAsyncCheck extends PythonSubscriptionCheck {
     }
 
     private String getQualifiedName(QualifiedExpression qualifiedExpression) {
-      StringBuilder sb = new StringBuilder();
-      buildName(qualifiedExpression, sb);
-      return sb.toString();
-    }
-
-    private void buildName(Expression expression, StringBuilder sb) {
-      if (expression instanceof Name name) {
-        sb.append(name.name());
-      } else if (expression instanceof QualifiedExpression qualified) {
-        buildName(qualified.qualifier(), sb);
-        sb.append(".").append(qualified.name().name());
-      }
+      return TreeInspections.resolveFullyQualifiedName(qualifiedExpression);
     }
   }
 }

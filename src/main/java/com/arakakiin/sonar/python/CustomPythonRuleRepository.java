@@ -17,9 +17,11 @@ public class CustomPythonRuleRepository implements RulesDefinition, PythonCustom
   public static final String REPOSITORY_NAME = "Arakakiin Custom Rules";
 
   private final SonarRuntime runtime;
+  private final List<Class<?>> checkClasses;
 
   public CustomPythonRuleRepository(SonarRuntime runtime) {
     this.runtime = runtime;
+    this.checkClasses = List.copyOf(RulesList.getChecks()); // immutable snapshot at construction
   }
 
   @Override
@@ -27,7 +29,7 @@ public class CustomPythonRuleRepository implements RulesDefinition, PythonCustom
     NewRepository repository =
         context.createRepository(REPOSITORY_KEY, "py").setName(REPOSITORY_NAME);
     RuleMetadataLoader ruleMetadataLoader = new RuleMetadataLoader(RESOURCE_BASE_PATH, runtime);
-    ruleMetadataLoader.addRulesByAnnotatedClass(repository, new ArrayList<>(RulesList.getChecks()));
+    ruleMetadataLoader.addRulesByAnnotatedClass(repository, new ArrayList<>(checkClasses));
     repository.done();
   }
 
@@ -38,6 +40,6 @@ public class CustomPythonRuleRepository implements RulesDefinition, PythonCustom
 
   @Override
   public List<Class<?>> checkClasses() {
-    return new ArrayList<>(RulesList.getChecks());
+    return checkClasses;
   }
 }

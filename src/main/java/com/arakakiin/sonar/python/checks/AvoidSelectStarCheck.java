@@ -28,19 +28,11 @@ public class AvoidSelectStarCheck extends PythonSubscriptionCheck {
 
   private void checkStringLiteral(SubscriptionContext ctx) {
     StringLiteral stringLiteral = (StringLiteral) ctx.syntaxNode();
-    String value = getStringValue(stringLiteral);
+    String value = TreeInspections.getStringValue(stringLiteral);
     if (value != null && SELECT_STAR_PATTERN.matcher(value).find()) {
       ctx.addIssue(stringLiteral, MESSAGE);
     }
   }
 
-  private static String getStringValue(StringLiteral stringLiteral) {
-    StringBuilder sb = new StringBuilder();
-    for (Object el : stringLiteral.stringElements()) {
-      if (el instanceof StringElement element) {
-        sb.append(element.trimmedQuotesValue());
-      }
-    }
-    return sb.toString();
-  }
+  // getStringValue delegated to TreeInspections.getStringValue
 }

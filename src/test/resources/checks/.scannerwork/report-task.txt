@@ -1,0 +1,6 @@
+projectKey=sample-python-project
+serverUrl=http://127.0.0.1:44813
+serverVersion=26.2.0.119303
+dashboardUrl=http://127.0.0.1:44813/dashboard?id=sample-python-project
+ceTaskId=1e392815-9720-42c1-890e-905207885822
+ceTaskUrl=http://127.0.0.1:44813/api/ce/task?id=1e392815-9720-42c1-890e-905207885822

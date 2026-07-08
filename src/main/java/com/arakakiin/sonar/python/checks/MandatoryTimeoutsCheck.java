@@ -70,17 +70,6 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
     return false;
   }
 
-  private static boolean isNone(Expression expr) {
-    if (expr.is(Tree.Kind.NONE)) {
-      return true;
-    }
-    if (expr.is(Tree.Kind.NAME)) {
-      return "None".equals(((Name) expr).name());
-    }
-    String className = expr.getClass().getSimpleName();
-    return className.contains("None") || className.contains("none");
-  }
-
   private static boolean hasTimeoutArgument(CallExpression callExpression) {
     for (Argument argument : callExpression.arguments()) {
       if (argument instanceof RegularArgument regArg) {
@@ -89,7 +78,7 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
           String argName = ((Name) keyword).name();
           if ("timeout".equals(argName)) {
             Expression value = regArg.expression();
-            if (isNone(value)) {
+            if (TreeInspections.isNoneLiteral(value)) {
               return false; // timeout=None is invalid
             }
             return true;

@@ -34,7 +34,7 @@ public class EfficientStringConcatenationCheck extends PythonSubscriptionCheck {
 
   private void checkCompoundAssignment(SubscriptionContext ctx) {
     CompoundAssignmentStatement stmt = (CompoundAssignmentStatement) ctx.syntaxNode();
-    if (isInsideLoop(stmt) && "+=".equals(stmt.compoundAssignmentToken().value())) {
+    if (TreeInspections.isInsideLoop(stmt) && "+=".equals(stmt.compoundAssignmentToken().value())) {
       Expression lhs = stmt.lhsExpression();
       Expression rhs = stmt.rhsExpression();
       if (isStringExpression(lhs) || isStringExpression(rhs)) {
@@ -45,7 +45,7 @@ public class EfficientStringConcatenationCheck extends PythonSubscriptionCheck {
 
   private void checkAssignment(SubscriptionContext ctx) {
     AssignmentStatement stmt = (AssignmentStatement) ctx.syntaxNode();
-    if (isInsideLoop(stmt)) {
+    if (TreeInspections.isInsideLoop(stmt)) {
       Expression assigned = stmt.assignedValue();
       if (assigned instanceof BinaryExpression binExpr && "+".equals(binExpr.operator().value())) {
         List<Name> lhsNames = new ArrayList<>();
@@ -104,17 +104,6 @@ public class EfficientStringConcatenationCheck extends PythonSubscriptionCheck {
     if (expr instanceof BinaryExpression binExpr) {
       return isStringExpression(binExpr.leftOperand())
           || isStringExpression(binExpr.rightOperand());
-    }
-    return false;
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT)) {
-        return true;
-      }
-      parent = parent.parent();
     }
     return false;
   }

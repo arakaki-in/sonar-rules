@@ -29,7 +29,7 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    if (isInsideLoop(callExpression)
+    if (TreeInspections.isInsideLoop(callExpression)
         && isDbQueryCall(callExpression)
         && !isNestedQueryCall(callExpression)) {
       ctx.addIssue(callExpression, MESSAGE);
@@ -67,20 +67,6 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
     } else if (callee.is(Tree.Kind.NAME)) {
       String name = ((Name) callee).name();
       return "execute".equals(name) || "query".equals(name);
-    }
-    return false;
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT)
-          || parent.is(Tree.Kind.WHILE_STMT)
-          || parent.is(Tree.Kind.LIST_COMPREHENSION)
-          || parent.is(Tree.Kind.GENERATOR_EXPR)) {
-        return true;
-      }
-      parent = parent.parent();
     }
     return false;
   }

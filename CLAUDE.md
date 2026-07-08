@@ -16,7 +16,10 @@ mvn test -Dtest=CustomPythonRuleRepositoryTest -pl .
 mvn test -Dtest=CustomPythonRulesPluginTest -pl .
 
 # Run only benchmark-tagged tests (Python performance benchmarks)
-mvn test -Dgroups="benchmark"
+mvn test -Pbenchmarks -Dgroups="benchmark"
+
+# Run all tests including benchmarks
+mvn test -Pbenchmarks
 
 # Run integration tests (requires Docker for SonarQube orchestrator)
 mvn clean verify -Pintegration-tests
@@ -60,6 +63,11 @@ Every check class follows this pattern:
 - Has a public `RULE_KEY` constant matching the HTML description filename
 - Registers syntax-node consumers in `initialize()` via `context.registerSyntaxNodeConsumer(Tree.Kind.<NODE_TYPE>, this::checkMethod)`
 - Issues are raised via `ctx.addIssue(syntaxNode, MESSAGE)`
+- Uses `TreeInspections` (in the same package) for common AST operations:
+  - `TreeInspections.isInsideLoop(Tree)` — check if a node is inside a for/while/comprehension
+  - `TreeInspections.isNoneLiteral(Expression)` — proper None literal detection (replaces fragile `getClass().getSimpleName()` heuristic)
+  - `TreeInspections.isAtModuleLevel(Tree)` — check if a node is at module scope
+  - `TreeInspections.resolveFullyQualifiedName(Expression)` — resolve dotted names from QualifiedExpression chains
 
 Example: `MandatoryTimeoutsCheck` registers on `Tree.Kind.CALL_EXPR`, inspects call expressions for HTTP request patterns (requests library, urllib), checks for a `timeout` argument, and raises if absent.
 
@@ -102,8 +110,19 @@ Repository and plugin tests (`CustomPythonRuleRepositoryTest`, `CustomPythonRule
 
 ## Adding a New Rule
 
-1. Create the check class in `src/main/java/com/arakakiin/sonar/python/checks/` following the pattern above
-2. Create the HTML description in `src/main/resources/org/sonar/l10n/python/rules/python/<RuleKey>.html`
-3. Register the class in `RulesList.getPythonChecks()` (or `getPythonTestChecks()` for test-only rules)
-4. Create a test class in `src/test/java/com/arakakiin/sonar/python/checks/` using `PythonCheckVerifier`
-5. Create or update the JSON metadata file (`<RuleKey>.json`) in the same directory as the HTML description, matching the severity and tags (WHEN APPLICABLE, Add the `"sustainability"` tag)
+1. Create the check class in `src/main/java/com/arakakiin/sonar/python/checks/` extending `PythonSubscriptionCheck`
+2. Use `TreeInspections` (in the same package) for common AST operations:
+   - `TreeInspections.isInsideLoop(Tree)` — check if a node is inside a for/while/comprehension
+   - `TreeInspections.isNoneLiteral(Expression)` — proper None literal detection (replaces the fragile `getClass().getSimpleName()` heuristic)
+   - `TreeInspections.isAtModuleLevel(Tree)` — check if a node is at module scope
+   - `TreeInspections.resolveFullyQualifiedName(Expression)` — resolve dotted names from QualifiedExpression chains
+3. Create the HTML description in `src/main/resources/org/sonar/l10n/python/rules/python/<RuleKey>.html`
+4. Register the class in `RulesList.getPythonChecks()` (or `getPythonTestChecks()` for test-only rules)
+5. Create a test class in `src/test/java/com/arakakiin/sonar/python/checks/` using `@Nested` inner classes:
+   - `@Nested @DisplayName("Compliant")` — tests that verify no issues on valid code
+   - `@Nested @DisplayName("Noncompliant")` — tests that verify each violation pattern
+   - Use `@DisplayName` on every test method for readable failure messages
+6. Create test fixture files in `src/test/resources/checks/`:
+   - `<RuleKey>_compliant.py` for compliant code (no `# Noncompliant` markers)
+   - `<RuleKey>_noncompliant.py` for noncompliant code (with `# Noncompliant` markers)
+7. Create or update the JSON metadata file (`<RuleKey>.json`) in the same directory as the HTML description, matching the severity and tags (WHEN APPLICABLE, Add the `"sustainability"` tag)

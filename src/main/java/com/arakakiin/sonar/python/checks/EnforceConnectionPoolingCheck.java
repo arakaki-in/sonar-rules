@@ -49,7 +49,7 @@ public class EnforceConnectionPoolingCheck extends PythonSubscriptionCheck {
           "Enforce connection pooling. Avoid creating raw database connections directly. Use"
               + " connection pools (e.g. SQLAlchemy engines or database-specific pool managers)"
               + " instead.");
-    } else if (isHttpRawCall(callExpression, fqn) && isInsideLoop(callExpression)) {
+    } else if (isHttpRawCall(callExpression, fqn) && TreeInspections.isInsideLoop(callExpression)) {
       ctx.addIssue(
           callExpression,
           "Avoid making raw HTTP requests inside a loop. Reuse TCP connections by using a"
@@ -67,7 +67,7 @@ public class EnforceConnectionPoolingCheck extends PythonSubscriptionCheck {
       String name = qualExpr.name().name();
       if ("connect".equals(name)) {
         Expression qualifier = qualExpr.qualifier();
-        String qualifierStr = getQualifierString(qualifier);
+        String qualifierStr = TreeInspections.resolveFullyQualifiedName(qualifier);
         if (qualifierStr != null
             && ("sqlite3".equals(qualifierStr)
                 || "psycopg2".equals(qualifierStr)
@@ -79,19 +79,6 @@ public class EnforceConnectionPoolingCheck extends PythonSubscriptionCheck {
       }
     }
     return false;
-  }
-
-  private static String getQualifierString(Expression expr) {
-    if (expr.is(Tree.Kind.NAME)) {
-      return ((Name) expr).name();
-    } else if (expr.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qual = (QualifiedExpression) expr;
-      String parent = getQualifierString(qual.qualifier());
-      if (parent != null) {
-        return parent + "." + qual.name().name();
-      }
-    }
-    return null;
   }
 
   private static boolean isHttpRawCall(CallExpression callExpression, String fqn) {
@@ -116,17 +103,6 @@ public class EnforceConnectionPoolingCheck extends PythonSubscriptionCheck {
           }
         }
       }
-    }
-    return false;
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT)) {
-        return true;
-      }
-      parent = parent.parent();
     }
     return false;
   }

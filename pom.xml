@@ -224,6 +224,7 @@
           <configuration>
             <reuseForks>true</reuseForks>
             <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+            <excludedGroups>benchmark</excludedGroups>
             <excludes>
               <exclude>**/*IntegrationTest.java</exclude>
               <exclude>**/*IT.java</exclude>
@@ -388,6 +389,20 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>benchmarks</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludedGroups combine.self="override"/>
+            </configuration>
           </plugin>
         </plugins>
       </build>

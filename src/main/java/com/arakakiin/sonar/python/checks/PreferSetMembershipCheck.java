@@ -24,7 +24,7 @@ public class PreferSetMembershipCheck extends PythonSubscriptionCheck {
 
   private void checkInExpression(SubscriptionContext ctx) {
     InExpression inExpr = (InExpression) ctx.syntaxNode();
-    if (!isInsideLoop(inExpr)) {
+    if (!TreeInspections.isInsideLoop(inExpr)) {
       return;
     }
     Expression right = inExpr.rightOperand();
@@ -38,17 +38,6 @@ public class PreferSetMembershipCheck extends PythonSubscriptionCheck {
         || expr.is(Tree.Kind.TUPLE)
         || expr.is(Tree.Kind.LIST_COMPREHENSION)) {
       return true;
-    }
-    return false;
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT)) {
-        return true;
-      }
-      parent = parent.parent();
     }
     return false;
   }

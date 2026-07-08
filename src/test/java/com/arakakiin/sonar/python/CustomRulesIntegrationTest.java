@@ -33,34 +33,14 @@ class CustomRulesIntegrationTest {
   private static final String PROJECT_KEY = "sample-python-project";
   private static final String SONAR_VERSION = "26.2.0.119303";
 
-  private static final List<String> RULE_KEYS =
-      List.of(
-          "arakakiin-rules:AvoidDictKeysIteration",
-          "arakakiin-rules:AvoidFileOpenWithoutWith",
-          "arakakiin-rules:AvoidListAdditionInLoop",
-          "arakakiin-rules:AvoidMapLambda",
-          "arakakiin-rules:AvoidPandasIterrows",
-          "arakakiin-rules:AvoidRangeLenIteration",
-          "arakakiin-rules:AvoidSelectStar",
-          "arakakiin-rules:AvoidStarImport",
-          "arakakiin-rules:AvoidSyncIoInAsync",
-          "arakakiin-rules:BatchOperationsRequired",
-          "arakakiin-rules:DbLevelAggregation",
-          "arakakiin-rules:DequeOverListInsert",
-          "arakakiin-rules:EfficientStringConcatenation",
-          "arakakiin-rules:EnforceConnectionPooling",
-          "arakakiin-rules:GeneratorsOverLists",
-          "arakakiin-rules:MandatoryTimeouts",
-          "arakakiin-rules:NoGlobalMutableState",
-          "arakakiin-rules:NoneComparisonStyle",
-          "arakakiin-rules:PreferDirectTruthiness",
-          "arakakiin-rules:PreferFStringOverFormat",
-          "arakakiin-rules:PreferIsinstanceOverTypeEquality",
-          "arakakiin-rules:PreferReversedOverSlice",
-          "arakakiin-rules:PreferSetComprehension",
-          "arakakiin-rules:PreferSetMembership",
-          "arakakiin-rules:ThreadLocalUsage",
-          "arakakiin-rules:ZeroNPlusOneQueries");
+  private static final List<String> RULE_KEYS = computeRuleKeys();
+
+  private static List<String> computeRuleKeys() {
+    return RulesList.getChecks().stream()
+        .map(cls -> cls.getAnnotation(org.sonar.check.Rule.class).key())
+        .map(key -> "arakakiin-rules:" + key)
+        .toList();
+  }
 
   @RegisterExtension
   static final OrchestratorExtension ORCHESTRATOR =

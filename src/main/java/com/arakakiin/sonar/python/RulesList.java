@@ -47,7 +47,6 @@ public final class RulesList {
             PreferIsinstanceOverTypeEqualityCheck.class,
             PreferDirectTruthinessCheck.class,
             PreferSetComprehensionCheck.class,
-            PreferReversedOverSliceCheck.class,
             AvoidListAdditionInLoopCheck.class));
   }
 

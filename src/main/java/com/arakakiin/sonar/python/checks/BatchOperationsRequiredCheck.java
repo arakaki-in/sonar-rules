@@ -28,7 +28,7 @@ public class BatchOperationsRequiredCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    if (isInsideLoop(callExpression) && isBatchableDbOperation(callExpression)) {
+    if (TreeInspections.isInsideLoop(callExpression) && isBatchableDbOperation(callExpression)) {
       ctx.addIssue(callExpression, MESSAGE);
     }
   }
@@ -66,31 +66,12 @@ public class BatchOperationsRequiredCheck extends PythonSubscriptionCheck {
     if (firstArg instanceof RegularArgument regArg) {
       Expression expr = regArg.expression();
       if (expr.is(Tree.Kind.STRING_LITERAL)) {
-        String value = getStringValue((StringLiteral) expr);
+        String value = TreeInspections.getStringValue((StringLiteral) expr);
         return value != null && BATCHABLE_SQL_PATTERN.matcher(value).find();
       }
     }
     return false;
   }
 
-  private static String getStringValue(StringLiteral stringLiteral) {
-    StringBuilder sb = new StringBuilder();
-    for (Object el : stringLiteral.stringElements()) {
-      if (el instanceof StringElement element) {
-        sb.append(element.trimmedQuotesValue());
-      }
-    }
-    return sb.toString();
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT)) {
-        return true;
-      }
-      parent = parent.parent();
-    }
-    return false;
-  }
+  // getStringValue delegated to TreeInspections.getStringValue
 }
