@@ -73,12 +73,10 @@ public class MandatoryTimeoutsCheck extends PythonSubscriptionCheck {
     if (isUrlopenCall(callExpression)) {
       int positionalCount = 0;
       for (Argument argument : callExpression.arguments()) {
-        if (argument instanceof RegularArgument regArg) {
-          if (regArg.keywordArgument() == null) {
-            positionalCount++;
-            if (positionalCount == 3) {
-              return !TreeInspections.isNoneLiteral(regArg.expression());
-            }
+        if (argument instanceof RegularArgument regArg && regArg.keywordArgument() == null) {
+          positionalCount++;
+          if (positionalCount == 3) {
+            return !TreeInspections.isNoneLiteral(regArg.expression());
           }
         }
       }
