@@ -1,0 +1,57 @@
+# .pre-commit-config.yaml — Pre-commit hooks for arakaki-in/sonar-rules
+#
+# Install:  prek install
+# Skip all: git commit --no-verify
+# Skip a hook: SKIP=<hook-id> git commit
+#   (e.g. SKIP=integration-tests git commit)
+# Run on all files: prek run --all-files
+
+# ---------------------------------------------------------------------------
+# File hygiene (built-in pre-commit hooks, no extra deps)
+# ---------------------------------------------------------------------------
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # -------------------------------------------------------------------------
+  # Java quality gate (local Maven hooks)
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: spotless-check
+        name: 'spotless: format check'
+        description: 'Google Java Format via Spotless (~1 s)'
+        entry: mvn spotless:check -q
+        language: system
+        files: '\.java$'
+        pass_filenames: false
+
+      - id: test-compile
+        name: 'test-compile: compilation'
+        description: 'Compile all test sources (~6 s)'
+        entry: mvn test-compile -q
+        language: system
+        pass_filenames: false
+
+      - id: unit-tests
+        name: 'unit tests: Surefire'
+        description: 'JUnit 5 unit tests, excludes Docker-dependent integration test (~10 s)'
+        entry: mvn test -Dtest='!CustomRulesIntegrationTest' -q
+        language: system
+        pass_filenames: false
+
+      - id: integration-tests
+        name: 'integration tests: Failsafe'
+        description: 'End-to-end SonarQube integration tests, requires Docker (~60–120 s)'
+        entry: mvn verify -Pintegration-tests -q
+        language: system
+        pass_filenames: false
