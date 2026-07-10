@@ -19,9 +19,6 @@ jobs:
       java-version: '21'
       run-benchmarks: true
       run-security-audit: true
-      run-sonarcloud: true
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   upload-coverage:
     name: Upload Coverage to Codecov

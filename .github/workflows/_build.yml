@@ -15,14 +15,6 @@ on:
         type: boolean
         default: true
         description: 'Whether to run OWASP dependency check'
-      run-sonarcloud:
-        type: boolean
-        default: false
-        description: 'Whether to run SonarCloud scan'
-    secrets:
-      SONAR_TOKEN:
-        required: false
-        description: 'SonarCloud token for coverage upload'
 
 jobs:
   build:
@@ -66,9 +58,3 @@ jobs:
           path: target/site/jacoco/jacoco.xml
           if-no-files-found: error
           retention-days: 7
-
-      - name: SonarCloud Scan
-        if: inputs.run-sonarcloud
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn sonar:sonar -B -Dsonar.token=${{ secrets.SONAR_TOKEN }}
