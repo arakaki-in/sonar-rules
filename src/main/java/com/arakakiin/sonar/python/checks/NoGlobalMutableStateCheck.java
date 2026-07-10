@@ -24,6 +24,8 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
   public void initialize(Context context) {
     context.registerSyntaxNodeConsumer(Tree.Kind.GLOBAL_STMT, this::checkGlobalStatement);
     context.registerSyntaxNodeConsumer(Tree.Kind.ASSIGNMENT_STMT, this::checkAssignmentStatement);
+    context.registerSyntaxNodeConsumer(
+        Tree.Kind.ANNOTATED_ASSIGNMENT, this::checkAnnotatedAssignment);
   }
 
   private void checkGlobalStatement(SubscriptionContext ctx) {
@@ -32,7 +34,7 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
 
   private void checkAssignmentStatement(SubscriptionContext ctx) {
     AssignmentStatement assignment = (AssignmentStatement) ctx.syntaxNode();
-    if (isAtModuleLevel(assignment)) {
+    if (TreeInspections.isAtModuleLevel(assignment)) {
       Expression rhs = assignment.assignedValue();
       if (rhs != null && isMutableExpression(rhs)) {
         ctx.addIssue(assignment, MUTABLE_DECL_MESSAGE);
@@ -40,15 +42,14 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
     }
   }
 
-  private static boolean isAtModuleLevel(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FUNCDEF) || parent.is(Tree.Kind.CLASSDEF)) {
-        return false;
+  private void checkAnnotatedAssignment(SubscriptionContext ctx) {
+    AnnotatedAssignment assignment = (AnnotatedAssignment) ctx.syntaxNode();
+    if (TreeInspections.isAtModuleLevel(assignment)) {
+      Expression rhs = assignment.assignedValue();
+      if (rhs != null && isMutableExpression(rhs)) {
+        ctx.addIssue(assignment, MUTABLE_DECL_MESSAGE);
       }
-      parent = parent.parent();
     }
-    return true;
   }
 
   private static boolean isMutableExpression(Expression expr) {
@@ -57,27 +58,28 @@ public class NoGlobalMutableStateCheck extends PythonSubscriptionCheck {
         || expr.is(Tree.Kind.SET_LITERAL)) {
       return true;
     }
+    if (expr.is(Tree.Kind.TUPLE)) {
+      Tuple tuple = (Tuple) expr;
+      for (Expression element : tuple.elements()) {
+        if (isMutableExpression(element)) {
+          return true;
+        }
+      }
+      return false;
+    }
     if (expr.is(Tree.Kind.CALL_EXPR)) {
       CallExpression call = (CallExpression) expr;
-      Expression callee = call.callee();
-
-      String name = null;
-      String fqn = null;
+      String fqn = CallMatcher.getCalleeFqn(call);
       Symbol symbol = call.calleeSymbol();
-      if (symbol != null) {
-        fqn = symbol.fullyQualifiedName();
+      if (symbol != null && symbol.is(Symbol.Kind.CLASS)) {
+        return true;
       }
 
-      if (callee.is(Tree.Kind.NAME)) {
-        name = ((Name) callee).name();
-      } else if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-        name = ((QualifiedExpression) callee).name().name();
-      }
+      String name = CallMatcher.getMethodName(call);
 
-      if (fqn != null) {
-        if (fqn.equals("contextvars.ContextVar") || fqn.equals("logging.getLogger")) {
-          return false;
-        }
+      if (fqn != null
+          && ("contextvars.ContextVar".equals(fqn) || "logging.getLogger".equals(fqn))) {
+        return false;
       }
       if (name != null) {
         if ("ContextVar".equals(name) || "getLogger".equals(name)) {

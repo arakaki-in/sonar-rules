@@ -4,13 +4,21 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
+@DisplayName("DbLevelAggregationCheck")
 class DbLevelAggregationCheckTest {
-  @Test
-  void test() {
-    PythonCheckVerifier.verify(
-        "src/test/resources/checks/DbLevelAggregation.py", new DbLevelAggregationCheck());
+  @Nested
+  @DisplayName("All scenarios")
+  class Scenarios {
+    @Test
+    @DisplayName("flags in-memory aggregation of query results")
+    void test() {
+      PythonCheckVerifier.verify(
+          "src/test/resources/checks/DbLevelAggregation.py", new DbLevelAggregationCheck());
+    }
   }
 }

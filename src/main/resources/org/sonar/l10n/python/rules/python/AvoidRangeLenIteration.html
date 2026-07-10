@@ -1,0 +1,17 @@
+<p>This rule detects the use of <code>for i in range(len(seq))</code> pattern for iterating over sequences.</p>
+<p>This pattern is both less readable and slower than Python's idiomatic alternatives. Direct iteration (<code>for item in seq</code>) avoids index lookups entirely. When the index is needed, <code>enumerate(seq)</code> provides both the index and value efficiently. For iterating over multiple sequences in parallel, <code>zip()</code> is cleaner and faster than indexing with <code>range(len())</code>.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+for i in range(len(items)):  # Noncompliant
+    process(items[i])
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+for item in items:  # Compliant: direct iteration
+    process(item)
+
+for i, item in enumerate(items):  # Compliant: when index is needed
+    process(i, item)
+</pre>

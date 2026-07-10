@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "arakaki-in",
+        "projectKey": "arakaki-in_sonar-rules"
+    }
+}

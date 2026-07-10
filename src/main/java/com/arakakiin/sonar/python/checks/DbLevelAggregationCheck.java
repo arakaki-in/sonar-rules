@@ -46,13 +46,9 @@ public class DbLevelAggregationCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isQueryCall(Expression expr) {
-    if (expr.is(Tree.Kind.CALL_EXPR)) {
-      CallExpression call = (CallExpression) expr;
-      Expression callee = call.callee();
-      if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-        String methodName = ((QualifiedExpression) callee).name().name();
-        return QUERY_METHODS.contains(methodName);
-      }
+    if (expr instanceof CallExpression call) {
+      String methodName = CallMatcher.getMethodName(call);
+      return methodName != null && QUERY_METHODS.contains(methodName);
     }
     return false;
   }

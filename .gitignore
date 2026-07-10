@@ -3,6 +3,8 @@ target/*
 src/test/resources/sample-python-project/.scannerwork/*
 results.tsv
 autosearch-hitl-results.tsv
+measure_vulns.py
 
 __pycache__/
 *.pyc
+src/test/resources/checks/.scannerwork/report-task.txt

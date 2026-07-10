@@ -1,3 +1,10 @@
+"""
+Avoid Map Lambda
+================
+Avoid using `map(lambda ...)` or `filter(lambda ...)`. Use list comprehensions or
+generator expressions instead. They are more Pythonic, highly readable, and usually faster.
+"""
+
 # Compliant
 squares = [x**2 for x in numbers]
 evens = (x for x in numbers if x % 2 == 0)

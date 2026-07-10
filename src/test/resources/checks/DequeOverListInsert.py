@@ -1,3 +1,11 @@
+"""
+Deque Over List Insert
+======================
+Inserting or popping elements at the beginning of a standard Python `list` (index 0)
+takes O(N) time because all subsequent items must be shifted.
+Use `collections.deque` instead, which supports O(1) operations from both ends.
+"""
+
 # Compliant
 my_list = []
 my_list.insert(1, "item")

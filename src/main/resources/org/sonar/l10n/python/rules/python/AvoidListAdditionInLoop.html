@@ -1,0 +1,16 @@
+<p>This rule detects list concatenation using <code>+</code> or <code>+= [item]</code> inside loops.</p>
+<p>Repeated list addition inside a loop creates a new list each iteration, turning an O(n) loop into O(n^2) due to the cost of copying all existing elements. Use <code>list.append(item)</code> for single items or <code>list.extend(items)</code> for multiple items — both are O(1) amortized. This anti-pattern is a common source of severe performance degradation in Python code.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+result = []
+for item in items:
+    result = result + [process(item)]  # Noncompliant: O(n^2)
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+result = []
+for item in items:
+    result.append(process(item))  # Compliant: O(n)
+</pre>

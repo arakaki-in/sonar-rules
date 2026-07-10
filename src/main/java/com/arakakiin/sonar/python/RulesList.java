@@ -41,7 +41,14 @@ public final class RulesList {
             NoneComparisonStyleCheck.class,
             AvoidStarImportCheck.class,
             PreferFStringOverFormatCheck.class,
-            AvoidMapLambdaCheck.class));
+            AvoidMapLambdaCheck.class,
+            PreferSetMembershipCheck.class,
+            AvoidRangeLenIterationCheck.class,
+            PreferIsinstanceOverTypeEqualityCheck.class,
+            PreferDirectTruthinessCheck.class,
+            PreferSetComprehensionCheck.class,
+            PreferReversedOverSliceCheck.class,
+            AvoidListAdditionInLoopCheck.class));
   }
 
   /** These rules are going to target TEST code only */

@@ -29,7 +29,7 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    if (isInsideLoop(callExpression)
+    if (TreeInspections.isInsideLoop(callExpression)
         && isDbQueryCall(callExpression)
         && !isNestedQueryCall(callExpression)) {
       ctx.addIssue(callExpression, MESSAGE);
@@ -48,40 +48,20 @@ public class ZeroNPlusOneQueriesCheck extends PythonSubscriptionCheck {
   }
 
   private static boolean isDbQueryCall(CallExpression callExpression) {
-    Expression callee = callExpression.callee();
-    if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qualExpr = (QualifiedExpression) callee;
-      String methodName = qualExpr.name().name();
-      if ("get".equals(methodName)) {
-        Expression qualifier = qualExpr.qualifier();
-        if (qualifier.is(Tree.Kind.NAME)) {
-          String qualName = ((Name) qualifier).name();
-          return qualName.contains("db")
-              || qualName.contains("session")
-              || qualName.contains("query")
-              || qualName.contains("repo");
-        }
-        return false;
+    String methodName = CallMatcher.getMethodName(callExpression);
+    if ("get".equals(methodName)) {
+      String qualifier = CallMatcher.getQualifierName(callExpression);
+      if (qualifier != null) {
+        return qualifier.contains("db")
+            || qualifier.contains("session")
+            || qualifier.contains("query")
+            || qualifier.contains("repo");
       }
-      return QUERY_METHODS.contains(methodName);
-    } else if (callee.is(Tree.Kind.NAME)) {
-      String name = ((Name) callee).name();
-      return "execute".equals(name) || "query".equals(name);
+      return false;
     }
-    return false;
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT)
-          || parent.is(Tree.Kind.WHILE_STMT)
-          || parent.is(Tree.Kind.LIST_COMPREHENSION)
-          || parent.is(Tree.Kind.GENERATOR_EXPR)) {
-        return true;
-      }
-      parent = parent.parent();
+    if (methodName != null && QUERY_METHODS.contains(methodName)) {
+      return true;
     }
-    return false;
+    return "execute".equals(methodName) || "query".equals(methodName);
   }
 }

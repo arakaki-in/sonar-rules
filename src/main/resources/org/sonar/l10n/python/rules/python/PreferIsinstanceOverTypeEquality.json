@@ -1,0 +1,14 @@
+{
+  "title": "Use isinstance() instead of type() equality checks",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "arakakiin-rules",
+    "performance"
+  ],
+  "defaultSeverity": "Minor"
+}

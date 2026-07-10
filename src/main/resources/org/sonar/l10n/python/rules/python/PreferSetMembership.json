@@ -1,0 +1,15 @@
+{
+  "title": "Use set instead of list or tuple for membership testing inside loops",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "arakakiin-rules",
+    "performance",
+    "sustainability"
+  ],
+  "defaultSeverity": "Major"
+}

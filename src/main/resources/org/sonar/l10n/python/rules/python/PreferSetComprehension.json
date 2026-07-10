@@ -1,0 +1,15 @@
+{
+  "title": "Use set/dict comprehensions instead of passing list comprehensions to constructors",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "arakakiin-rules",
+    "performance",
+    "sustainability"
+  ],
+  "defaultSeverity": "Minor"
+}

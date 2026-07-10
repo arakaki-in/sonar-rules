@@ -1,3 +1,11 @@
+"""
+Zero N+1 Queries
+================
+Executing database queries inside loops creates the "N+1 queries" performance bottleneck,
+sending individual query requests to the database for each loop iteration.
+Use batch operations, prefetching, or SQL joins to fetch all required records in a single query.
+"""
+
 # Compliant cases
 def get_users_compliant(session, user_ids):
     users = session.query(User).filter(User.id.in_(user_ids)).all()

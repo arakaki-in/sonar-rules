@@ -28,32 +28,22 @@ public class BatchOperationsRequiredCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    if (isInsideLoop(callExpression) && isBatchableDbOperation(callExpression)) {
+    if (TreeInspections.isInsideLoop(callExpression) && isBatchableDbOperation(callExpression)) {
       ctx.addIssue(callExpression, MESSAGE);
     }
   }
 
   private static boolean isBatchableDbOperation(CallExpression callExpression) {
-    Expression callee = callExpression.callee();
-    if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      QualifiedExpression qualExpr = (QualifiedExpression) callee;
-      String methodName = qualExpr.name().name();
-      if ("add".equals(methodName) || "delete".equals(methodName)) {
-        Expression qualifier = qualExpr.qualifier();
-        if (qualifier.is(Tree.Kind.NAME)) {
-          String qualName = ((Name) qualifier).name();
-          return qualName.contains("session") || qualName.contains("db");
-        }
-        return false;
+    String methodName = CallMatcher.getMethodName(callExpression);
+    if ("add".equals(methodName) || "delete".equals(methodName)) {
+      String qualifier = CallMatcher.getQualifierName(callExpression);
+      if (qualifier != null) {
+        return qualifier.contains("session") || qualifier.contains("db");
       }
-      if ("execute".equals(methodName)) {
-        return hasBatchableSql(callExpression);
-      }
-    } else if (callee.is(Tree.Kind.NAME)) {
-      String name = ((Name) callee).name();
-      if ("execute".equals(name)) {
-        return hasBatchableSql(callExpression);
-      }
+      return false;
+    }
+    if ("execute".equals(methodName)) {
+      return hasBatchableSql(callExpression);
     }
     return false;
   }
@@ -66,31 +56,12 @@ public class BatchOperationsRequiredCheck extends PythonSubscriptionCheck {
     if (firstArg instanceof RegularArgument regArg) {
       Expression expr = regArg.expression();
       if (expr.is(Tree.Kind.STRING_LITERAL)) {
-        String value = getStringValue((StringLiteral) expr);
+        String value = TreeInspections.getStringValue((StringLiteral) expr);
         return value != null && BATCHABLE_SQL_PATTERN.matcher(value).find();
       }
     }
     return false;
   }
 
-  private static String getStringValue(StringLiteral stringLiteral) {
-    StringBuilder sb = new StringBuilder();
-    for (Object el : stringLiteral.stringElements()) {
-      if (el instanceof StringElement element) {
-        sb.append(element.trimmedQuotesValue());
-      }
-    }
-    return sb.toString();
-  }
-
-  private static boolean isInsideLoop(Tree tree) {
-    Tree parent = tree.parent();
-    while (parent != null) {
-      if (parent.is(Tree.Kind.FOR_STMT) || parent.is(Tree.Kind.WHILE_STMT)) {
-        return true;
-      }
-      parent = parent.parent();
-    }
-    return false;
-  }
+  // getStringValue delegated to TreeInspections.getStringValue
 }

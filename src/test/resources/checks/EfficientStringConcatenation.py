@@ -1,3 +1,11 @@
+"""
+Efficient String Concatenation
+==============================
+Repeatedly concatenating strings using `+` or `+=` inside a loop is inefficient
+because strings are immutable, meaning a new string copy is created on each iteration.
+Use list appending and `''.join()` for efficient linear string construction.
+"""
+
 # Compliant cases
 def build_str_compliant(lines):
     parts = []

@@ -3,13 +3,13 @@
 [![CI/CD Pipeline](https://github.com/arakaki-in/sonar-rules/actions/workflows/release.yml/badge.svg)](https://github.com/arakaki-in/sonar-rules/actions/workflows/release.yml)
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A highly optimized SonarQube plugin implementing 16 advanced performance, resource management, database safety, and concurrency custom rules for Python static analysis.
+A highly optimized SonarQube plugin implementing 26 advanced performance, resource management, database safety, concurrency, and sustainability custom rules for Python static analysis.
 
 ---
 
 ## 🚀 Features & Custom Rules
 
-This plugin registers 16 custom rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`).
+This plugin registers 26 custom rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`). All rules carry the `"sustainability"` tag.
 
 ### 1. Concurrency
 * **No Global Mutable State (`NoGlobalMutableState`)**
@@ -52,6 +52,12 @@ This plugin registers 16 custom rules under the repository **Arakakiin Custom Ru
 ### 5. Logging & Error Handling
 * **Avoid Try/Except for Control Flow (`AvoidTryExceptControlFlow`)**
   * Prevents using try/except exception blocks for normal, predictable control flow logic.
+
+---
+
+## 🌱 Sustainability
+
+Rule severities are assigned according to estimated carbon impact per occurrence, following the Green Software Foundation SCI specification (ISO 21031:2024) and precedents from ecoCode/creedengo.
 
 ---
 
@@ -135,11 +141,17 @@ Unit tests use the `PythonCheckVerifier` harness to verify check logic against m
 mvn test
 ```
 
+Repository and plugin registration tests (`CustomPythonRuleRepositoryTest`, `CustomPythonRulesPluginTest`) use JUnit 5 `@ParameterizedTest` to verify compatibility against three SonarQube versions (9.9 LTS, 10.x LTS, 26.2 Community Build).
+
 ### Running Integration Tests
 Integration tests run a full SonarQube server instance via Sonar Orchestrator to verify plugin loading, API compliance, rule registration, and scanner report processing:
 ```bash
 mvn clean verify -Pintegration-tests
 ```
+
+### Code Coverage & SonarCloud
+
+JaCoCo coverage reports are generated at `target/site/jacoco/jacoco.xml` after running `mvn clean test`. Test fixture Python files under `src/test/resources/checks/` are excluded from SonarCloud analysis via `<sonar.test.exclusions>` in `pom.xml` to avoid false positives on files that intentionally contain rule violations.
 
 ---
 

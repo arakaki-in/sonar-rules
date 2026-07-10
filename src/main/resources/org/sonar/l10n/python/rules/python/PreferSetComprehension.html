@@ -1,0 +1,14 @@
+<p>This rule detects when a list comprehension is passed directly to a collection constructor like <code>set()</code>, <code>dict()</code>, <code>tuple()</code>, or <code>frozenset()</code>.</p>
+<p>Passing a list comprehension to these constructors creates an unnecessary intermediate list. Python supports set comprehensions (<code>{x for x in iterable}</code>) and dict comprehensions (<code>{k: v for k, v in iterable}</code>) which build the target collection directly, avoiding the memory overhead of the intermediate list.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+unique = set([x.name for x in items])  # Noncompliant
+tupled = tuple([x for x in data])       # Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+unique = {x.name for x in items}  # Compliant: set comprehension
+tupled = tuple(x for x in data)   # Compliant: generator expression
+</pre>

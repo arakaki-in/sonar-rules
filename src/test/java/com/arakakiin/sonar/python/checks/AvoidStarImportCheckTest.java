@@ -4,13 +4,21 @@
  */
 package com.arakakiin.sonar.python.checks;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.python.checks.utils.PythonCheckVerifier;
 
+@DisplayName("AvoidStarImportCheck")
 class AvoidStarImportCheckTest {
-  @Test
-  void test() {
-    PythonCheckVerifier.verify(
-        "src/test/resources/checks/AvoidStarImport.py", new AvoidStarImportCheck());
+  @Nested
+  @DisplayName("All scenarios")
+  class Scenarios {
+    @Test
+    @DisplayName("flags wildcard imports")
+    void test() {
+      PythonCheckVerifier.verify(
+          "src/test/resources/checks/AvoidStarImport.py", new AvoidStarImportCheck());
+    }
   }
 }

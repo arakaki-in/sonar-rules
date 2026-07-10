@@ -19,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,27 +34,14 @@ class CustomRulesIntegrationTest {
   private static final String PROJECT_KEY = "sample-python-project";
   private static final String SONAR_VERSION = "26.2.0.119303";
 
-  private static final List<String> RULE_KEYS =
-      List.of(
-          "arakakiin-rules:AvoidFileOpenWithoutWith",
-          "arakakiin-rules:NoGlobalMutableState",
-          "arakakiin-rules:ThreadLocalUsage",
-          "arakakiin-rules:EnforceConnectionPooling",
-          "arakakiin-rules:MandatoryTimeouts",
-          "arakakiin-rules:ZeroNPlusOneQueries",
-          "arakakiin-rules:AvoidSelectStar",
-          "arakakiin-rules:BatchOperationsRequired",
-          "arakakiin-rules:DbLevelAggregation",
-          "arakakiin-rules:GeneratorsOverLists",
-          "arakakiin-rules:EfficientStringConcatenation",
-          "arakakiin-rules:AvoidSyncIoInAsync",
-          "arakakiin-rules:AvoidPandasIterrows",
-          "arakakiin-rules:AvoidDictKeysIteration",
-          "arakakiin-rules:DequeOverListInsert",
-          "arakakiin-rules:NoneComparisonStyle",
-          "arakakiin-rules:AvoidStarImport",
-          "arakakiin-rules:PreferFStringOverFormat",
-          "arakakiin-rules:AvoidMapLambda");
+  private static final List<String> RULE_KEYS = computeRuleKeys();
+
+  private static List<String> computeRuleKeys() {
+    return RulesList.getChecks().stream()
+        .map(cls -> cls.getAnnotation(org.sonar.check.Rule.class).key())
+        .map(key -> "arakakiin-rules:" + key)
+        .toList();
+  }
 
   @RegisterExtension
   static final OrchestratorExtension ORCHESTRATOR =
@@ -87,6 +75,7 @@ class CustomRulesIntegrationTest {
             .setProperty("sonar.token", token));
     waitForAnalysisProcessing(serverUrl, token);
 
+    List<String> zeroIssueRules = new ArrayList<>();
     for (String ruleKey : RULE_KEYS) {
       HttpResponse<String> response =
           get(
@@ -98,12 +87,14 @@ class CustomRulesIntegrationTest {
               bearer(token));
 
       assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-      assertThat(issueTotal(response.body()))
-          .as(
-              "Expected rule %s to trigger at least 1 issue, response: %s",
-              ruleKey, response.body())
-          .isGreaterThanOrEqualTo(1);
+      int total = issueTotal(response.body());
+      if (total == 0) {
+        zeroIssueRules.add(ruleKey);
+      }
     }
+    assertThat(zeroIssueRules)
+        .as("Expected all rules to trigger at least 1 issue, but the following had 0 issues")
+        .isEmpty();
   }
 
   private String generateAdminToken(String serverUrl) throws Exception {

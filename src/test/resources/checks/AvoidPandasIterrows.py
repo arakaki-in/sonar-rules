@@ -1,3 +1,10 @@
+"""
+Avoid Pandas iterrows
+=====================
+Iterating through a Pandas DataFrame using `iterrows()` is slow and inefficient.
+Use vectorized operations, `itertuples()`, or `apply()` for significantly better performance.
+"""
+
 # Compliant
 for row in df.itertuples():
     pass

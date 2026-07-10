@@ -1,3 +1,10 @@
+"""
+Avoid Dict Keys Iteration
+=========================
+Checking membership in dictionary keys using `.keys()` is slower and redundant in Python.
+Use `key in dict` directly, which leverages O(1) average-time dictionary lookup.
+"""
+
 # Compliant
 if "key" in my_dict:
     pass

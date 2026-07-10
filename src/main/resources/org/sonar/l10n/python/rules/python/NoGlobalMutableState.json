@@ -7,9 +7,9 @@
     "constantCost": "20min"
   },
   "tags": [
+    "arakakiin-rules",
     "concurrency",
-    "multi-threading",
-    "custom-python"
+    "multi-threading"
   ],
-  "defaultSeverity": "Critical"
+  "defaultSeverity": "Major"
 }

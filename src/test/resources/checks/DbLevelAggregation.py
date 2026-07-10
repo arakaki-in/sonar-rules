@@ -1,3 +1,11 @@
+"""
+DB Level Aggregation
+====================
+Avoid loading all records from the database into Python memory just to aggregate them
+(using `len()`, `sum()`, etc.). Instead, use database-level SQL aggregate functions
+(like `COUNT`, `SUM`, `AVG`) which execute far faster and reduce network transmission.
+"""
+
 # Compliant cases
 def count_users_compliant(session):
     return session.query(func.count(User.id)).scalar()

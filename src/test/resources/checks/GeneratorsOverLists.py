@@ -1,3 +1,11 @@
+"""
+Generators Over Lists
+=====================
+When passing an iterable sequence to builtins like `sum()`, `any()`, `all()`, or
+`join()`, use a generator expression instead of a list comprehension. This prevents
+allocating memory for an intermediate list, which is immediately discarded.
+"""
+
 # Compliant cases
 total1 = sum(x for x in range(10))
 joined1 = ", ".join(str(x) for x in range(10))

@@ -11,8 +11,15 @@ mvn clean test
 # Run a single Java test class
 mvn test -Dtest=YourCheckTest -pl .
 
+# Run specific repository or plugin registration tests
+mvn test -Dtest=CustomPythonRuleRepositoryTest -pl .
+mvn test -Dtest=CustomPythonRulesPluginTest -pl .
+
 # Run only benchmark-tagged tests (Python performance benchmarks)
-mvn test -Dgroups="benchmark"
+mvn test -Pbenchmarks -Dgroups="benchmark"
+
+# Run all tests including benchmarks
+mvn test -Pbenchmarks
 
 # Run integration tests (requires Docker for SonarQube orchestrator)
 mvn clean verify -Pintegration-tests
@@ -26,11 +33,8 @@ mvn spotless:check
 # Run security audit (OWASP dependency check)
 mvn verify -Psecurity-audit -DskipTests
 
-# Run Python benchmarks directly (bypassing Maven)
-uv run pytest python_benchmarks/ -v
-
-# Run Python benchmarks for a specific Python version
-uv run --python 3.12 pytest python_benchmarks/ -v
+# Run Python benchmarks (single version, Python 3.15)
+uv run --python 3.15 pytest python_benchmarks/ -v
 
 # Build the plugin JAR without tests
 mvn clean package -DskipTests
@@ -48,7 +52,7 @@ This is a SonarQube plugin for Python static analysis, implemented in Java and p
 
 2. **`CustomPythonRuleRepository`** — Implements both `RulesDefinition` (for rule metadata/UI) and `PythonCustomRuleRepository` (for analysis engine). Using `RuleMetadataLoader`, it loads HTML descriptions from the classpath at `/org/sonar/l10n/python/rules/python/` and discovers rules via the `@Rule` annotation on check classes. Repository key: `arakakiin-rules`.
 
-3. **`RulesList`** — Central catalog. Two separate lists: `getPythonChecks()` for main-code rules (19 rules) and `getPythonTestChecks()` for test-code-only rules (currently empty). Adding a new rule requires adding it here.
+3. **`RulesList`** — Central catalog. Two separate lists: `getPythonChecks()` for main-code rules (26 rules) and `getPythonTestChecks()` for test-code-only rules (currently empty). Adding a new rule requires adding it here.
 
 ### Rule Check Pattern
 
@@ -59,6 +63,11 @@ Every check class follows this pattern:
 - Has a public `RULE_KEY` constant matching the HTML description filename
 - Registers syntax-node consumers in `initialize()` via `context.registerSyntaxNodeConsumer(Tree.Kind.<NODE_TYPE>, this::checkMethod)`
 - Issues are raised via `ctx.addIssue(syntaxNode, MESSAGE)`
+- Uses `TreeInspections` (in the same package) for common AST operations:
+  - `TreeInspections.isInsideLoop(Tree)` — check if a node is inside a for/while/comprehension
+  - `TreeInspections.isNoneLiteral(Expression)` — proper None literal detection (replaces fragile `getClass().getSimpleName()` heuristic)
+  - `TreeInspections.isAtModuleLevel(Tree)` — check if a node is at module scope
+  - `TreeInspections.resolveFullyQualifiedName(Expression)` — resolve dotted names from QualifiedExpression chains
 
 Example: `MandatoryTimeoutsCheck` registers on `Tree.Kind.CALL_EXPR`, inspects call expressions for HTTP request patterns (requests library, urllib), checks for a `timeout` argument, and raises if absent.
 
@@ -68,9 +77,13 @@ Each rule has an HTML description file at `src/main/resources/org/sonar/l10n/pyt
 
 ### Python Benchmarks Integration
 
-Python performance benchmarks live under `python_benchmarks/` and are managed with `uv` (not pip). Dependencies are pinned in `python_benchmarks/pyproject.toml` (requires-python `>=3.10,<3.14`).
+Python performance benchmarks live under `python_benchmarks/` and are managed with `uv` (not pip). Dependencies are pinned in `pyproject.toml` (root, requires-python `>=3.10,<3.14`).
 
-The bridge between Maven and Python: `PythonBenchmarksTest.java` (tagged `@Tag("benchmark")`) runs `uv run --python <version> pytest python_benchmarks/` as a subprocess for each available Python version (3.10–3.13). It uses `pb.inheritIO()` to forward pytest output directly. Benchmarks prove performance properties (e.g., `deque` O(1) insert-left is faster than list O(n) insert-at-0), not rule logic.
+The bridge between Maven and Python: `PythonBenchmarksTest.java` (tagged `@Tag("benchmark")`) runs `uv run --python 3.15 pytest python_benchmarks/` as a subprocess for a single Python version (defined by `BENCHMARK_PYTHON_VERSION = "3.15"`). It uses `pb.inheritIO()` to forward pytest output directly and includes retry logic for flaky `uv venv` creation. Benchmarks prove performance properties (e.g., `deque` O(1) insert-left is faster than list O(n) insert-at-0), not rule logic.
+
+### Multi-Version Testing
+
+Repository and plugin tests (`CustomPythonRuleRepositoryTest`, `CustomPythonRulesPluginTest`) use JUnit 5 `@ParameterizedTest` with a `@MethodSource` that supplies three SonarQube versions (9.9, 10.8, 26.2) to verify compatibility across the supported SonarQube range.
 
 ### Maven Build Profiles
 
@@ -93,13 +106,26 @@ The bridge between Maven and Python: `PythonBenchmarksTest.java` (tagged `@Tag("
 - **Maven 3.6.3+** (also enforced)
 - **SonarQube** target: 9.9 LTS through latest (10.x+)
 - Plugin manifest declares support for languages `py` and `ipynb`
+- **SonarCloud**: Test fixture Python files under `src/test/resources/checks/` are excluded from analysis via `<sonar.test.exclusions>` in `pom.xml` to avoid false positives on files that intentionally contain rule violations
 
 ## Adding a New Rule
 
-1. Create the check class in `src/main/java/com/arakakiin/sonar/python/checks/` following the pattern above
-2. Create the HTML description in `src/main/resources/org/sonar/l10n/python/rules/python/<RuleKey>.html`
-3. Register the class in `RulesList.getPythonChecks()` (or `getPythonTestChecks()` for test-only rules)
-4. Create a test class in `src/test/java/com/arakakiin/sonar/python/checks/` using `PythonCheckVerifier`
+1. Create the check class in `src/main/java/com/arakakiin/sonar/python/checks/` extending `PythonSubscriptionCheck`
+2. Use `TreeInspections` (in the same package) for common AST operations:
+   - `TreeInspections.isInsideLoop(Tree)` — check if a node is inside a for/while/comprehension
+   - `TreeInspections.isNoneLiteral(Expression)` — proper None literal detection (replaces the fragile `getClass().getSimpleName()` heuristic)
+   - `TreeInspections.isAtModuleLevel(Tree)` — check if a node is at module scope
+   - `TreeInspections.resolveFullyQualifiedName(Expression)` — resolve dotted names from QualifiedExpression chains
+3. Create the HTML description in `src/main/resources/org/sonar/l10n/python/rules/python/<RuleKey>.html`
+4. Register the class in `RulesList.getPythonChecks()` (or `getPythonTestChecks()` for test-only rules)
+5. Create a test class in `src/test/java/com/arakakiin/sonar/python/checks/` using `@Nested` inner classes:
+   - `@Nested @DisplayName("Compliant")` — tests that verify no issues on valid code
+   - `@Nested @DisplayName("Noncompliant")` — tests that verify each violation pattern
+   - Use `@DisplayName` on every test method for readable failure messages
+6. Create test fixture files in `src/test/resources/checks/`:
+   - `<RuleKey>_compliant.py` for compliant code (no `# Noncompliant` markers)
+   - `<RuleKey>_noncompliant.py` for noncompliant code (with `# Noncompliant` markers)
+7. Create or update the JSON metadata file (`<RuleKey>.json`) in the same directory as the HTML description, matching the severity and tags (WHEN APPLICABLE, Add the `"sustainability"` tag)
 
 ## Agent skills
 
@@ -114,3 +140,4 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 ### Domain docs
 
 Single-context — `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+

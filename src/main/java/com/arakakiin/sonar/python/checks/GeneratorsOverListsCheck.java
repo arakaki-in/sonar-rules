@@ -29,20 +29,10 @@ public class GeneratorsOverListsCheck extends PythonSubscriptionCheck {
 
   private void checkCallExpression(SubscriptionContext ctx) {
     CallExpression callExpression = (CallExpression) ctx.syntaxNode();
-    Expression callee = callExpression.callee();
+    String methodName = CallMatcher.getMethodName(callExpression);
 
-    boolean targetFunction = false;
-    if (callee.is(Tree.Kind.NAME)) {
-      String name = ((Name) callee).name();
-      if (ITERABLE_CONSUMING_FUNCTIONS.contains(name)) {
-        targetFunction = true;
-      }
-    } else if (callee.is(Tree.Kind.QUALIFIED_EXPR)) {
-      String methodName = ((QualifiedExpression) callee).name().name();
-      if ("join".equals(methodName)) {
-        targetFunction = true;
-      }
-    }
+    boolean targetFunction =
+        ITERABLE_CONSUMING_FUNCTIONS.contains(methodName) || "join".equals(methodName);
 
     if (targetFunction && !callExpression.arguments().isEmpty()) {
       Argument firstArg = callExpression.arguments().get(0);
