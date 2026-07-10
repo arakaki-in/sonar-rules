@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -109,10 +107,7 @@ class CustomRulesIntegrationTest {
             basic(ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD));
 
     assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-
-    Matcher matcher = Pattern.compile("\"token\"\\s*:\\s*\"([^\"]+)\"").matcher(response.body());
-    assertThat(matcher.find()).as(response.body()).isTrue();
-    return matcher.group(1);
+    return Json.parse(response.body()).asObject().get("token").asString();
   }
 
   private void activateRules(String serverUrl, String token) throws Exception {
@@ -126,11 +121,7 @@ class CustomRulesIntegrationTest {
                     "name", "CustomPythonProfile")),
             bearer(token));
     assertThat(createResponse.statusCode()).as(createResponse.body()).isEqualTo(200);
-
-    Matcher keyMatcher =
-        Pattern.compile("\"key\"\\s*:\\s*\"([^\"]+)\"").matcher(createResponse.body());
-    assertThat(keyMatcher.find()).as(createResponse.body()).isTrue();
-    String profileKey = keyMatcher.group(1);
+    String profileKey = Json.parse(createResponse.body()).asObject().get("key").asString();
 
     HttpResponse<String> defaultResponse =
         post(
