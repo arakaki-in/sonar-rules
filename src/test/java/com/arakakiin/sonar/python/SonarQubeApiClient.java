@@ -127,6 +127,7 @@ class SonarQubeApiClient {
    *
    * @throws AssertionError if the analysis fails or is cancelled, or if the timeout expires
    */
+  @SuppressWarnings("java:S2925")
   void waitForAnalysis(String projectKey, Duration timeout)
       throws IOException, InterruptedException {
     Instant deadline = Instant.now().plus(timeout);
