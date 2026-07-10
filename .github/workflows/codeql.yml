@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'java-kotlin' ]
+        language: [ 'java-kotlin', 'python' ]
 
     steps:
       - name: Checkout repository
@@ -32,6 +32,7 @@ jobs:
           config-file: .github/codeql/codeql-config.yml
 
       - name: Set up JDK 21
+        if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -39,6 +40,7 @@ jobs:
           cache: 'maven'
 
       - name: Compile code
+        if: matrix.language == 'java-kotlin'
         run: mvn clean compile -B
 
       - name: Perform CodeQL Analysis
