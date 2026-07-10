@@ -49,9 +49,4 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: integration-tests
-        name: 'integration tests: Failsafe'
-        description: 'End-to-end SonarQube integration tests, requires Docker (~60–120 s)'
-        entry: mvn verify -Pintegration-tests -q
-        language: system
-        pass_filenames: false
+

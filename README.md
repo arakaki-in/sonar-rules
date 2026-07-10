@@ -9,11 +9,10 @@ A highly optimized SonarQube plugin implementing 26 advanced performance, resour
 
 ## 🚀 Features & Custom Rules
 
-This plugin registers custom static analysis rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`). All rules carry the `"sustainability"` tag.
+This plugin registers custom static analysis rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`).
 
 To find the complete catalog, source code, and detailed documentation for the rules:
-* **Rule Registry**: [RulesList.java](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/java/com/arakakiin/sonar/python/checks/RulesList.java) declares and registers all active rules.
-* **Rule Implementations**: The Java check classes are located under [src/main/java/com/arakakiin/sonar/python/checks/](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/java/com/arakakiin/sonar/python/checks/).
+* **Rule Implementations**: The Python check are located under [src/test/resources/checks/](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/java/com/arakakiin/sonar/python/checks/).
 * **Rule Descriptions**: The HTML documentation and JSON configurations for the rules are located under [src/main/resources/org/sonar/l10n/python/rules/python/](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/resources/org/sonar/l10n/python/rules/python/).
 
 ---
@@ -41,21 +40,25 @@ mvn clean package
 ```
 
 The output plugin JAR will be created at:
-`target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar`
+`target/arakakiin-rules-plugin-<version>.jar`
 
 ---
 
 ## 💾 Installation & Local Running (Docker)
 
 1. Ensure you have built the plugin JAR using `mvn clean package`.
-2. Start a SonarQube container using Docker, mounting the plugin JAR directly into the extensions directory:
+2. Copy the built JAR to a version-independent name:
+   ```bash
+   cp target/arakakiin-rules-plugin-*.jar target/arakakiin-rules-plugin.jar
+   ```
+3. Start a SonarQube container using Docker, mounting the plugin JAR directly into the extensions directory:
 
-```bash
-docker run -d --name sonarqube \
-  -p 9000:9000 \
-  -v $(pwd)/target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar:/opt/sonarqube/extensions/plugins/arakakiin-rules-plugin-1.0-SNAPSHOT.jar \
-  sonarqube:community
-```
+   ```bash
+   docker run -d --name sonarqube \
+     -p 9000:9000 \
+     -v $(pwd)/target/arakakiin-rules-plugin.jar:/opt/sonarqube/extensions/plugins/arakakiin-rules-plugin.jar \
+     sonarqube:community
+   ```
 
 Alternatively, you can use Docker Compose:
 
@@ -67,7 +70,7 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - ./target/arakakiin-rules-plugin-1.0-SNAPSHOT.jar:/opt/sonarqube/extensions/plugins/arakakiin-rules-plugin-1.0-SNAPSHOT.jar
+      - ./target/arakakiin-rules-plugin.jar:/opt/sonarqube/extensions/plugins/arakakiin-rules-plugin.jar
 ```
 
 ---
