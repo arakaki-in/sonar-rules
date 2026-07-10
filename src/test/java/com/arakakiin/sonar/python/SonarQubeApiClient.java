@@ -82,7 +82,7 @@ class SonarQubeApiClient {
     HttpResponse<String> response =
         postRaw("/api/qualityprofiles/create", Map.of("language", language, "name", name));
     assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-    return Json.parse(response.body()).asObject().get("key").asString();
+    return Json.parse(response.body()).asObject().get("profile").asObject().get("key").asString();
   }
 
   /** Set a quality profile as the default for its language. */
@@ -101,9 +101,7 @@ class SonarQubeApiClient {
   /** Activate a rule in a quality profile. */
   void activateRule(String profileKey, String ruleKey) throws IOException, InterruptedException {
     HttpResponse<String> response =
-        postRaw(
-            "/api/qualityprofiles/activate_rule",
-            Map.of("rule", ruleKey, "profile_key", profileKey));
+        postRaw("/api/qualityprofiles/activate_rule", Map.of("rule", ruleKey, "key", profileKey));
     assertThat(response.statusCode()).as(response.body()).isBetween(200, 204);
   }
 
@@ -115,7 +113,12 @@ class SonarQubeApiClient {
   String getAnalysisStatus(String projectKey) throws IOException, InterruptedException {
     HttpResponse<String> response = getRaw("/api/ce/component?component=" + encode(projectKey));
     assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-    return Json.parse(response.body()).asObject().get("status").asString();
+    return Json.parse(response.body())
+        .asObject()
+        .get("current")
+        .asObject()
+        .get("status")
+        .asString();
   }
 
   /**
