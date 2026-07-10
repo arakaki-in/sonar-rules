@@ -9,49 +9,12 @@ A highly optimized SonarQube plugin implementing 26 advanced performance, resour
 
 ## 🚀 Features & Custom Rules
 
-This plugin registers 26 custom rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`). All rules carry the `"sustainability"` tag.
+This plugin registers custom static analysis rules under the repository **Arakakiin Custom Rules** (Key: `arakakiin-rules`). All rules carry the `"sustainability"` tag.
 
-### 1. Concurrency
-* **No Global Mutable State (`NoGlobalMutableState`)**
-  * Prevents the usage of global variables containing mutable types (like dictionaries, lists, or custom class instances) to avoid race conditions.
-* **ThreadLocal vs ContextVar (`ThreadLocalUsage`)**
-  * Promotes using modern, async-safe `contextvars.ContextVar` instead of legacy `threading.local` for scoping variables in concurrent environments.
-* **Immutable Data Transfer (`ImmutableDataTransfer`)**
-  * Enforces the use of immutable structures (e.g., `frozenset`, `tuple`, or read-only structures) when transferring data across concurrency boundaries.
-
-### 2. Resource Management
-* **Enforce Connection Pooling (`EnforceConnectionPooling`)**
-  * Flags raw socket connections or single database connection initializations that bypass established connection pools.
-* **Context Managers Mandatory (`AvoidFileOpenWithoutWith`)**
-  * Ensures file, network, and database operations use `with` statements to guarantee correct resource allocation and cleanup.
-* **Mandatory Timeouts (`MandatoryTimeouts`)**
-  * Flags network requests (e.g., via the `requests` library) that do not specify an explicit timeout parameter, preventing hung threads.
-
-### 3. Database Safety & Performance
-* **Zero N+1 Queries (`ZeroNPlusOneQueries`)**
-  * Detects database queries executed inside iterative loops, recommending batch loading instead.
-* **Avoid `SELECT *` on Heavy Tables (`AvoidSelectStar`)**
-  * Flags the use of `SELECT *` or unbound ORM queries on large tables to prevent unnecessary CPU and network overhead.
-* **Batch Operations Required (`BatchOperationsRequired`)**
-  * Recommends batch inserts/updates (e.g., `bulk_create`) when inserting or modifying multiple records in a loop.
-* **DB-Level Aggregation (`DbLevelAggregation`)**
-  * Restricts fetching all table records only to perform sums, counts, or averages in-memory in Python; enforces utilizing database aggregation functions.
-
-### 4. CPU & Memory Optimization
-* **Avoid Eager Regex Compilation (`AvoidEagerRegexCompilation`)**
-  * Recommends static compilation of regular expressions rather than repeatedly compiles within critical loop sections.
-* **Generators Over Lists for Large Data (`GeneratorsOverLists`)**
-  * Encourages using generators or iterators instead of building massive lists in memory when processing large files or query streams.
-* **Efficient String Concatenation (`EfficientStringConcatenation`)**
-  * Flags sequential string addition (`+` or `+=`) inside loops, recommending `''.join()` for optimized memory allocation.
-* **Use `__slots__` for High-Volume Objects (`UseSlots`)**
-  * Mandates defining `__slots__` in data models or instances that are instantiated in high volume to save RAM.
-* **Fast JSON Parsing (`FastJsonParsing`)**
-  * Recommends high-performance JSON libraries (like `orjson` or `ujson`) instead of standard `json` in performance-critical execution blocks.
-
-### 5. Logging & Error Handling
-* **Avoid Try/Except for Control Flow (`AvoidTryExceptControlFlow`)**
-  * Prevents using try/except exception blocks for normal, predictable control flow logic.
+To find the complete catalog, source code, and detailed documentation for the rules:
+* **Rule Registry**: [RulesList.java](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/java/com/arakakiin/sonar/python/checks/RulesList.java) declares and registers all active rules.
+* **Rule Implementations**: The Java check classes are located under [src/main/java/com/arakakiin/sonar/python/checks/](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/java/com/arakakiin/sonar/python/checks/).
+* **Rule Descriptions**: The HTML documentation and JSON configurations for the rules are located under [src/main/resources/org/sonar/l10n/python/rules/python/](file:///home/everton/arakakiin/regras-python/sonar-rules-arakakiin/src/main/resources/org/sonar/l10n/python/rules/python/).
 
 ---
 
