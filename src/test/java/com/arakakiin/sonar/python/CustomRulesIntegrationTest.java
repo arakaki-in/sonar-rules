@@ -22,8 +22,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -102,7 +104,7 @@ class CustomRulesIntegrationTest {
         post(
             serverUrl,
             "/api/user_tokens/generate",
-            form("name", "arakakiin-it-" + Instant.now().toEpochMilli()),
+            form(Map.of("name", "arakakiin-it-" + Instant.now().toEpochMilli())),
             basic(ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD));
 
     assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
@@ -118,8 +120,9 @@ class CustomRulesIntegrationTest {
             serverUrl,
             "/api/qualityprofiles/create",
             form(
-                "language", "py",
-                "name", "CustomPythonProfile"),
+                Map.of(
+                    "language", "py",
+                    "name", "CustomPythonProfile")),
             bearer(token));
     assertThat(createResponse.statusCode()).as(createResponse.body()).isEqualTo(200);
 
@@ -133,9 +136,10 @@ class CustomRulesIntegrationTest {
             serverUrl,
             "/api/qualityprofiles/set_default",
             form(
-                "key", profileKey,
-                "qualityProfile", "CustomPythonProfile",
-                "language", "py"),
+                Map.of(
+                    "key", profileKey,
+                    "qualityProfile", "CustomPythonProfile",
+                    "language", "py")),
             bearer(token));
     assertThat(defaultResponse.statusCode()).as(defaultResponse.body()).isBetween(200, 204);
 
@@ -145,11 +149,12 @@ class CustomRulesIntegrationTest {
               serverUrl,
               "/api/qualityprofiles/activate_rule",
               form(
-                  "profile_key", profileKey,
-                  "key", profileKey,
-                  "qualityProfile", "CustomPythonProfile",
-                  "language", "py",
-                  "rule", ruleKey),
+                  Map.of(
+                      "profile_key", profileKey,
+                      "key", profileKey,
+                      "qualityProfile", "CustomPythonProfile",
+                      "language", "py",
+                      "rule", ruleKey)),
               bearer(token));
 
       assertThat(activationResponse.statusCode()).as(activationResponse.body()).isBetween(200, 204);
@@ -207,17 +212,10 @@ class CustomRulesIntegrationTest {
     return "Bearer " + token;
   }
 
-  private static String form(String... keyValues) {
-    assertThat(keyValues.length % 2).isZero();
-
-    StringBuilder body = new StringBuilder();
-    for (int index = 0; index < keyValues.length; index += 2) {
-      if (body.length() > 0) {
-        body.append('&');
-      }
-      body.append(encode(keyValues[index])).append('=').append(encode(keyValues[index + 1]));
-    }
-    return body.toString();
+  private static String form(Map<String, String> params) {
+    return params.entrySet().stream()
+        .map(e -> encode(e.getKey()) + "=" + encode(e.getValue()))
+        .collect(Collectors.joining("&"));
   }
 
   private static String encode(String value) {
