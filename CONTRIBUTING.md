@@ -41,7 +41,7 @@ The output plugin JAR will be built at `target/arakakiin-rules-plugin-1.0-SNAPSH
 To implement and register a new custom Python rule:
 
 ### Step 1: Implement the Check class
-Create a class extending `PythonCheck` (or `PythonSubscriptionCheck` / `PythonVisitorCheck` depending on complexity) under `src/main/java/com/arakakiin/sonar/python/checks/`. 
+Create a class extending `PythonCheck` (or `PythonSubscriptionCheck` / `PythonVisitorCheck` depending on complexity) under `src/main/java/com/arakakiin/sonar/python/checks/`.
 
 * Prefix the class name with a descriptive check name, ending in `Check` (e.g. `MyNewRuleCheck.java`).
 * Annotate the class with `@Rule(key = "MyNewRule")`.

@@ -11,22 +11,18 @@ import com.sonar.orchestrator.junit5.OrchestratorExtension;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
+@DisplayName("CustomRulesIntegrationTest")
 class CustomRulesIntegrationTest {
 
   private static final String ADMIN_LOGIN = "admin";
@@ -56,185 +52,63 @@ class CustomRulesIntegrationTest {
                   new File("target"), "arakakiin-rules-plugin-*.jar"))
           .build();
 
-  private final HttpClient httpClient = HttpClient.newHttpClient();
+  /** API client authenticated with an admin-generated token. Set up once before all tests. */
+  private static SonarQubeApiClient api;
 
-  @Test
-  void testRulesIntegration() throws Exception {
-    File projectDir = new File("src/test/resources/checks");
-    assertThat(projectDir).isDirectory();
-
+  @BeforeAll
+  static void setUp() throws Exception {
     String serverUrl = ORCHESTRATOR.getServer().getUrl();
-    String token = generateAdminToken(serverUrl);
-    activateRules(serverUrl, token);
+
+    // Phase 1: admin operations (basic auth)
+    SonarQubeApiClient adminApi =
+        SonarQubeApiClient.withBasicAuth(serverUrl, ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD);
+    String token = adminApi.generateToken("arakakiin-it-" + Instant.now().toEpochMilli());
+
+    // Phase 2: authenticated operations (bearer token)
+    api = SonarQubeApiClient.withBearerToken(serverUrl, token);
+
+    String profileKey = api.createQualityProfile("CustomPythonProfile", "py");
+    api.setDefaultQualityProfile(profileKey, "CustomPythonProfile", "py");
+    for (String ruleKey : RULE_KEYS) {
+      api.activateRule(profileKey, ruleKey);
+    }
 
     ORCHESTRATOR.executeBuild(
-        SonarScanner.create(projectDir)
+        SonarScanner.create(new File("src/test/resources/checks"))
             .setProperty("sonar.projectKey", PROJECT_KEY)
             .setProperty("sonar.projectName", "Sample Python Project")
             .setProperty("sonar.sources", ".")
             .setProperty("sonar.token", token));
-    waitForAnalysisProcessing(serverUrl, token);
 
-    List<String> zeroIssueRules = new ArrayList<>();
-    for (String ruleKey : RULE_KEYS) {
-      HttpResponse<String> response =
-          get(
-              serverUrl,
-              "/api/issues/search?componentKeys="
-                  + encode(PROJECT_KEY)
-                  + "&rules="
-                  + encode(ruleKey),
-              bearer(token));
-
-      assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-      int total = issueTotal(response.body());
-      if (total == 0) {
-        zeroIssueRules.add(ruleKey);
-      }
-    }
-    assertThat(zeroIssueRules)
-        .as("Expected all rules to trigger at least 1 issue, but the following had 0 issues")
-        .isEmpty();
+    api.waitForAnalysis(PROJECT_KEY, Duration.ofMinutes(2));
   }
 
-  private String generateAdminToken(String serverUrl) throws Exception {
-    HttpResponse<String> response =
-        post(
-            serverUrl,
-            "/api/user_tokens/generate",
-            form("name", "arakakiin-it-" + Instant.now().toEpochMilli()),
-            basic(ADMIN_LOGIN, DEFAULT_ADMIN_PASSWORD));
+  // ---------------------------------------------------------------------------
+  // Tests
+  // ---------------------------------------------------------------------------
 
-    assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-
-    Matcher matcher = Pattern.compile("\"token\"\\s*:\\s*\"([^\"]+)\"").matcher(response.body());
-    assertThat(matcher.find()).as(response.body()).isTrue();
-    return matcher.group(1);
+  @Test
+  @DisplayName("fixture directory exists")
+  void fixtureDirectoryExists() {
+    File projectDir = new File("src/test/resources/checks");
+    assertThat(projectDir).isDirectory();
   }
 
-  private void activateRules(String serverUrl, String token) throws Exception {
-    HttpResponse<String> createResponse =
-        post(
-            serverUrl,
-            "/api/qualityprofiles/create",
-            form(
-                "language", "py",
-                "name", "CustomPythonProfile"),
-            bearer(token));
-    assertThat(createResponse.statusCode()).as(createResponse.body()).isEqualTo(200);
-
-    Matcher keyMatcher =
-        Pattern.compile("\"key\"\\s*:\\s*\"([^\"]+)\"").matcher(createResponse.body());
-    assertThat(keyMatcher.find()).as(createResponse.body()).isTrue();
-    String profileKey = keyMatcher.group(1);
-
-    HttpResponse<String> defaultResponse =
-        post(
-            serverUrl,
-            "/api/qualityprofiles/set_default",
-            form(
-                "key", profileKey,
-                "qualityProfile", "CustomPythonProfile",
-                "language", "py"),
-            bearer(token));
-    assertThat(defaultResponse.statusCode()).as(defaultResponse.body()).isBetween(200, 204);
-
-    for (String ruleKey : RULE_KEYS) {
-      HttpResponse<String> activationResponse =
-          post(
-              serverUrl,
-              "/api/qualityprofiles/activate_rule",
-              form(
-                  "profile_key", profileKey,
-                  "key", profileKey,
-                  "qualityProfile", "CustomPythonProfile",
-                  "language", "py",
-                  "rule", ruleKey),
-              bearer(token));
-
-      assertThat(activationResponse.statusCode()).as(activationResponse.body()).isBetween(200, 204);
-    }
+  @ParameterizedTest
+  @MethodSource("ruleKeys")
+  @DisplayName("each rule produces at least 1 issue against its fixture")
+  void eachRuleHasIssues(String ruleKey) throws Exception {
+    int total = api.searchIssueCount(PROJECT_KEY, ruleKey);
+    assertThat(total)
+        .as(ruleKey + " has 0 issues — check fixture for missing # Noncompliant markers")
+        .isPositive();
   }
 
-  private void waitForAnalysisProcessing(String serverUrl, String token) throws Exception {
-    long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.MINUTES.toNanos(2);
-    while (System.nanoTime() < deadline) {
-      HttpResponse<String> response =
-          get(serverUrl, "/api/ce/component?component=" + encode(PROJECT_KEY), bearer(token));
+  // ---------------------------------------------------------------------------
+  // Method sources
+  // ---------------------------------------------------------------------------
 
-      assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
-      String status = firstJsonValue(response.body(), "status");
-      if ("SUCCESS".equals(status)) {
-        return;
-      }
-      assertThat(status).as(response.body()).isNotEqualTo("FAILED").isNotEqualTo("CANCELED");
-      Thread.sleep(1_000);
-    }
-    throw new AssertionError("Timed out waiting for SonarQube to process the analysis report");
-  }
-
-  private HttpResponse<String> get(String serverUrl, String path, String authorization)
-      throws IOException, InterruptedException {
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(serverUrl + path))
-            .header("Authorization", authorization)
-            .GET()
-            .build();
-    return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-  }
-
-  private HttpResponse<String> post(
-      String serverUrl, String path, String body, String authorization)
-      throws IOException, InterruptedException {
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(serverUrl + path))
-            .header("Authorization", authorization)
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .POST(HttpRequest.BodyPublishers.ofString(body))
-            .build();
-    return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-  }
-
-  private static String basic(String login, String password) {
-    String credentials = login + ":" + password;
-    return "Basic "
-        + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-  }
-
-  private static String bearer(String token) {
-    return "Bearer " + token;
-  }
-
-  private static String form(String... keyValues) {
-    assertThat(keyValues.length % 2).isZero();
-
-    StringBuilder body = new StringBuilder();
-    for (int index = 0; index < keyValues.length; index += 2) {
-      if (body.length() > 0) {
-        body.append('&');
-      }
-      body.append(encode(keyValues[index])).append('=').append(encode(keyValues[index + 1]));
-    }
-    return body.toString();
-  }
-
-  private static String encode(String value) {
-    return URLEncoder.encode(value, StandardCharsets.UTF_8);
-  }
-
-  private static int issueTotal(String responseBody) {
-    Matcher matcher = Pattern.compile("\"total\"\\s*:\\s*(\\d+)").matcher(responseBody);
-    assertThat(matcher.find()).as(responseBody).isTrue();
-    return Integer.parseInt(matcher.group(1));
-  }
-
-  private static String firstJsonValue(String responseBody, String propertyName) {
-    Matcher matcher =
-        Pattern.compile("\"" + Pattern.quote(propertyName) + "\"\\s*:\\s*\"([^\"]+)\"")
-            .matcher(responseBody);
-    assertThat(matcher.find()).as(responseBody).isTrue();
-    return matcher.group(1);
+  static Stream<String> ruleKeys() {
+    return RULE_KEYS.stream();
   }
 }

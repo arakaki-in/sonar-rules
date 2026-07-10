@@ -10,7 +10,7 @@ These rules apply to any agent working on this SonarQube Custom Python Rules rep
   - Make sure to define the rule metadata appropriately using annotations (`@Rule(key = "...")`) and place them in the correct repository.
   - When you create a new rule, do not forget to register it in the main Rule Repository class (e.g., `CustomPythonRuleRepository`).
 - **Testing**:
-  - **Unit Tests**: Use JUnit 5. For testing rule logic against sample Python files, use the `PythonCheckVerifier` test harness. 
+  - **Unit Tests**: Use JUnit 5. For testing rule logic against sample Python files, use the `PythonCheckVerifier` test harness.
   - **Integration Tests**: Integration tests use the `Sonar Orchestrator` to spin up a SonarQube instance. Put integration tests in `src/test/java` but ensure they are correctly grouped or executed specifically if they require full Orchestrator execution.
 - **Code Quality**:
   - Keep the plugin lightweight. Avoid introducing unnecessary external dependencies in `pom.xml`.
@@ -84,4 +84,3 @@ This ensures compatibility across the supported SonarQube range without duplicat
 ### Benchmark Strategy
 
 Python performance benchmarks run against a single Python version (3.15) via `uv run --python 3.15 pytest python_benchmarks/`. Benchmarks are invoked from `PythonBenchmarksTest.java` (tagged `@Tag("benchmark")`) and use retry logic for flaky `uv venv` creation. Previously, benchmarks ran across a matrix of Python 3.10–3.13; single-version execution reduces CI time while maintaining coverage of the primary target runtime.
-
