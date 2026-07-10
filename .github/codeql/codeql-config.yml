@@ -2,3 +2,4 @@ name: "CodeQL configuration"
 paths-ignore:
   # Test fixtures intentionally contain rule violations (marked with '# Noncompliant')
   - 'src/test/resources/checks/**'
+  - '**/*.py'
