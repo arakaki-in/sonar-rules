@@ -6,6 +6,7 @@ package com.arakakiin.sonar.python;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.eclipsesource.json.Json;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.junit5.OrchestratorExtension;
 import com.sonar.orchestrator.locator.FileLocation;
@@ -223,16 +224,10 @@ class CustomRulesIntegrationTest {
   }
 
   private static int issueTotal(String responseBody) {
-    Matcher matcher = Pattern.compile("\"total\"\\s*:\\s*(\\d+)").matcher(responseBody);
-    assertThat(matcher.find()).as(responseBody).isTrue();
-    return Integer.parseInt(matcher.group(1));
+    return Json.parse(responseBody).asObject().get("total").asInt();
   }
 
   private static String firstJsonValue(String responseBody, String propertyName) {
-    Matcher matcher =
-        Pattern.compile("\"" + Pattern.quote(propertyName) + "\"\\s*:\\s*\"([^\"]+)\"")
-            .matcher(responseBody);
-    assertThat(matcher.find()).as(responseBody).isTrue();
-    return matcher.group(1);
+    return Json.parse(responseBody).asObject().get(propertyName).asString();
   }
 }
