@@ -72,6 +72,7 @@
     <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
     <owasp-dependency-check.version>9.0.9</owasp-dependency-check.version>
+    <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
   </properties>
 
   <dependencies>
@@ -324,6 +325,25 @@
             </execution>
           </executions>
         </plugin>
+
+        <!-- Generate CycloneDX SBOM -->
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>${cyclonedx-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>makeBom</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <outputFormat>json</outputFormat>
+            <outputName>bom</outputName>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -351,6 +371,10 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
