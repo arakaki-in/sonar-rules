@@ -12,3 +12,4 @@ results.tsv
 autosearch-hitl-results.tsv
 node_modules
 .env*
+.claude/worktrees/
