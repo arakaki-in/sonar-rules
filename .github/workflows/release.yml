@@ -83,8 +83,25 @@ jobs:
             echo "tag_name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Package JAR
-        run: mvn clean package -DskipTests -B
+      - name: Configure Maven settings for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${env.GITHUB_ACTOR}</username>
+                <password>${env.GITHUB_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to GitHub Packages
+        run: mvn clean deploy -DskipTests -B -Prelease
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
