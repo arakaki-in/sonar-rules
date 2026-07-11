@@ -105,6 +105,7 @@ jobs:
           files: |
             target/arakakiin-rules-plugin-*.jar
             target/arakakiin-rules-plugin-*.jar.asc
+            target/bom.json
           draft: false
           prerelease: false
           generate_release_notes: true
