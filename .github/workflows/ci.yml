@@ -27,12 +27,12 @@ jobs:
     if: needs.build.result == 'success'
     steps:
       - name: Download JaCoCo report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jacoco-report-jdk21
 
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: jacoco.xml
           fail_ci_if_error: false
